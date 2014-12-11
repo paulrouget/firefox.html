@@ -17,14 +17,16 @@ let Dependencies = {
 // Extend Iframe prototype
 
 HTMLIFrameElement.prototype.show = function() {
-  this.removeAttribute("hidden");
+  this.setAttribute("aria-hidden", "false");
+  this.setAttribute("aria-expanded", "true");
   if (window.IS_PRIVILEGED) {
     this.setVisible(true);
   }
 }
 
 HTMLIFrameElement.prototype.hide = function() {
-  this.setAttribute("hidden", "true");
+  this.setAttribute("aria-hidden", "true");
+  this.setAttribute("aria-expanded", "false");
   if (window.IS_PRIVILEGED) {
     this.setVisible(false);
   }
@@ -130,7 +132,7 @@ let gBrowser = {
       tab.iframe.src = url;
     }
 
-    document.querySelector(".tabstrip").appendChild(tab.dom);
+    document.querySelector("[role='tablist']").appendChild(tab.dom);
 
     tab.dom.onclick = () => this.selectTab(tab);
 
@@ -155,12 +157,12 @@ let gBrowser = {
   },
 
   getTabPosition: function(tab) {
-    let children = document.querySelector(".tabstrip").children;
+    let children = document.querySelector("[role='tablist']").children;
     return Array.indexOf(children, tab.dom);
   },
 
   getTabAt: function(idx) {
-    let children = document.querySelector(".tabstrip").children;
+    let children = document.querySelector("[role='tablist']").children;
     let dom = children[idx];
     for (let tab of this._tabs) {
       if (tab.dom === dom) {

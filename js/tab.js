@@ -12,7 +12,7 @@ function Tab(iframeParent) {
   this._iframeParent = iframeParent;
 
   let hbox = document.createElement("hbox");
-  hbox.className = "tab";
+  hbox.setAttribute("role", "tab");
   hbox.setAttribute("align", "center");
 
   let throbber = document.createElement("div");
@@ -65,9 +65,27 @@ Tab.prototype = {
     iframe.setAttribute("mozbrowser", "true");
     iframe.setAttribute("flex", "1");
     iframe.setAttribute("remote", "true");
+    iframe.setAttribute("role", "tabpanel");
+
+    let tabIdIndex = 0;
+
+    while(true) {
+      let dummy = document.querySelector(
+        "[role='tablist'] [role='tab'][aria-controls='__tab" + tabIdIndex + "']"
+      );
+
+      if (!dummy) {
+        break;
+      }
+
+      ++tabIdIndex;
+    }
+
+    let tabId = "__tab" + tabIdIndex;
+    this._dom.setAttribute("aria-controls", tabId);
+    iframe.setAttribute("aria-labelledby", tabId);
 
     this._iframe = iframe;
-
     this._iframeParent.appendChild(iframe);
 
     if (this.isSelected) {
@@ -96,7 +114,7 @@ Tab.prototype = {
     if (this.hasIframe()) {
       this.iframe.show();
     }
-    this.dom.classList.add("selected");
+    this.dom.setAttribute("aria-selected", "true");
     this._selected = true;
   },
 
@@ -104,7 +122,7 @@ Tab.prototype = {
     if (this.hasIframe()) {
       this.iframe.hide();
     }
-    this.dom.classList.remove("selected");
+    this.dom.setAttribute("aria-selected", "false");
     this._selected = false;
   },
 

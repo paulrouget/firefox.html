@@ -11,7 +11,7 @@
 }
 
 /* tabs */
-.tabstrip {
+[role="tablist"] {
   background-image: linear-gradient(to top, #1B1B1B, #3D3D3D);
 }
 
@@ -43,12 +43,12 @@
   --curve-hover-border: #212121;
 }
 
-.tab,
-.tab.selected {
+[role="tab"],
+[role="tab"][aria-selected="true"] {
   color: #ffffff;
 }
 
-.tab:not(.selected):not(:hover) + .tab:not(.selected):not(:hover):not(:first-of-type) {
+[role="tab"]:not([aria-selected="true"]):not(:hover) + [role="tab"]:not([aria-selected="true"]):not(:hover):not(:first-of-type) {
   background-image: linear-gradient(to top, #040404, transparent 80%);
 }
 
@@ -85,7 +85,7 @@
   background-image: url(images/Toolbar.png), var(--toolbarbutton-active-background-image);
 }
 
-.tab > .close-button {
+[role="tab"] > .close-button {
   background-image: url(images/close.png);
 }
 
@@ -115,7 +115,7 @@ body.sslev .identity {
   .navbar > button:hover:active {
     background-image: url(images/Toolbar@2x.png), var(--toolbarbutton-active-background-image);
   }
-  .tab > .close-button {
+  [role="tab"] > .close-button {
     background-image: url(images/close@2x.png);
   }
   .searchselector {
