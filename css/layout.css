@@ -40,7 +40,7 @@ vbox {
   flex-flow: column;
 }
 
-[hidden="true"] {
+[aria-hidden="true"] {
   display: none;
 }
 

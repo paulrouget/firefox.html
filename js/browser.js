@@ -17,14 +17,14 @@ let Dependencies = {
 // Extend Iframe prototype
 
 HTMLIFrameElement.prototype.show = function() {
-  this.removeAttribute("hidden");
+  this.setAttribute("aria-hidden", "false");
   if (window.IS_PRIVILEGED) {
     this.setVisible(true);
   }
 }
 
 HTMLIFrameElement.prototype.hide = function() {
-  this.setAttribute("hidden", "true");
+  this.setAttribute("aria-hidden", "true");
   if (window.IS_PRIVILEGED) {
     this.setVisible(false);
   }
