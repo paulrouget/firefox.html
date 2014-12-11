@@ -18,6 +18,7 @@ let Dependencies = {
 
 HTMLIFrameElement.prototype.show = function() {
   this.setAttribute("aria-hidden", "false");
+  this.setAttribute("aria-expanded", "true");
   if (window.IS_PRIVILEGED) {
     this.setVisible(true);
   }
@@ -25,6 +26,7 @@ HTMLIFrameElement.prototype.show = function() {
 
 HTMLIFrameElement.prototype.hide = function() {
   this.setAttribute("aria-hidden", "true");
+  this.setAttribute("aria-expanded", "false");
   if (window.IS_PRIVILEGED) {
     this.setVisible(false);
   }
