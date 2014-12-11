@@ -130,7 +130,7 @@ let gBrowser = {
       tab.iframe.src = url;
     }
 
-    document.querySelector(".tabstrip").appendChild(tab.dom);
+    document.querySelector("[role='tablist']").appendChild(tab.dom);
 
     tab.dom.onclick = () => this.selectTab(tab);
 
@@ -155,12 +155,12 @@ let gBrowser = {
   },
 
   getTabPosition: function(tab) {
-    let children = document.querySelector(".tabstrip").children;
+    let children = document.querySelector("[role='tablist']").children;
     return Array.indexOf(children, tab.dom);
   },
 
   getTabAt: function(idx) {
-    let children = document.querySelector(".tabstrip").children;
+    let children = document.querySelector("[role='tablist']").children;
     let dom = children[idx];
     for (let tab of this._tabs) {
       if (tab.dom === dom) {

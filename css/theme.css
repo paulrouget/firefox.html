@@ -20,13 +20,13 @@
 
 /* tabs */
 
-.tabstrip {
+[role="tablist"] {
   padding: 0 28px 0 10px;
   margin-bottom: calc(-1 * var(--hwd-pixel));
   z-index: 999;
 }
 
-[os="osx"] .tabstrip {
+[os="osx"] [role="tablist"] {
   padding-top: 9px;
   padding-left: 70px;
 }
