@@ -31,7 +31,7 @@
   padding-left: 70px;
 }
 
-.tab {
+[role="tablist"] [role="tab"] {
   -moz-user-select: none;
   cursor: default;
   color: #444;
@@ -76,31 +76,31 @@
   --curve-hover-gradient-end: transparent;
 }
 
-[os="linux"] .tab {
+[os="linux"] [role="tab"] {
   color: white;
 }
 
 @media (min-resolution: 2dppx) {
-  .tab {
+  [role="tab"] {
     border-image-slice: 0 56 0 56 fill;
   }
 }
 
 
-.tab.selected {
+[role="tab"][aria-selected="true"] {
   z-index: 1001;
   border-image-source: -moz-element(#canvas-tab-selected);
   color: black;
 }
 
-.tab:not(.selected):not(:hover) + .tab:not(.selected):not(:hover):not(:first-of-type) {
+[role="tab"]:not([aria-selected="true"]):not(:hover) + [role="tab"]:not([aria-selected="true"]):not(:hover):not(:first-of-type) {
   background-image: linear-gradient(to top, #AAA, transparent 80%);
   background-size: 1px 100%;
   background-repeat: no-repeat;
   background-position: -14px 0;
 }
 
-.tab:not(.selected):hover {
+[role="tab"]:not([aria-selected="true"]):hover {
   border-image-source: -moz-element(#canvas-tab-hover);
 }
 
@@ -126,12 +126,12 @@
 }
 
 
-.tab.loading > .favicon,
-.tab:not(.loading) > .throbber {
+[role="tab"].loading > .favicon,
+[role="tab"]:not(.loading) > .throbber {
   display: none;
 }
 
-.tab > .title {
+[role="tab"] > .title {
   flex-grow: 1;
   width: 0;
   text-overflow: ellipsis;
@@ -142,11 +142,11 @@
   font-size: 12px;
 }
 
-.tab.selected > .title {
+[role="tab"][aria-selected="true"] > .title {
   opacity: 1;
 }
 
-.tab > .close-button {
+[role="tab"] > .close-button {
   width: 16px;
   height: 16px;
   background-color: transparent;
@@ -155,30 +155,30 @@
   margin: 0 -6px 0 3px;
 }
 
-[os="osx"] .tab > .close-button {
+[os="osx"] [role="tab"] > .close-button {
   background-position: 0 0;
 }
 
-[os="linux"] .tab > .close-button {
+[os="linux"] [role="tab"] > .close-button {
   background-position: -48px 0;
 }
 
-.tab.selected > .close-button {
+[role="tab"][aria-selected="true"] > .close-button {
   background-position: 0 0;
 }
 
 
 @media (min-resolution: 2dppx) {
-  .tab > .close-button {
+  [role="tab"] > .close-button {
     background-image: url(../images/shared/close@2x.png);
   }
 }
 
-.tab > .close-button:hover {
+[role="tab"] > .close-button:hover {
   background-position: -16px 0;
 }
 
-.tab > .close-button:hover:active {
+[role="tab"] > .close-button:hover:active {
   background-position: -32px 0;
 }
 

@@ -12,7 +12,7 @@ function Tab(iframeParent) {
   this._iframeParent = iframeParent;
 
   let hbox = document.createElement("hbox");
-  hbox.className = "tab";
+  hbox.setAttribute("role", "tab");
   hbox.setAttribute("align", "center");
 
   let throbber = document.createElement("div");
@@ -96,7 +96,7 @@ Tab.prototype = {
     if (this.hasIframe()) {
       this.iframe.show();
     }
-    this.dom.classList.add("selected");
+    this.dom.setAttribute("aria-selected", "true");
     this._selected = true;
   },
 
@@ -104,7 +104,7 @@ Tab.prototype = {
     if (this.hasIframe()) {
       this.iframe.hide();
     }
-    this.dom.classList.remove("selected");
+    this.dom.setAttribute("aria-selected", "false");
     this._selected = false;
   },
 
