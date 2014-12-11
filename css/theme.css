@@ -131,19 +131,23 @@
   display: none;
 }
 
-.tab > .title {
+.tab > .titleHost {
   flex-grow: 1;
-  width: 0;
-  text-overflow: ellipsis;
-  overflow-x: hidden;
   z-index: 1000;
   opacity: 0.7;
   font: -moz-field;
   font-size: 12px;
 }
 
-.tab.selected > .title {
+.tab.selected > .titleHost {
   opacity: 1;
+}
+
+.tab > .titleHost > .title {
+  max-width: 94px;
+  width: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab > .close-button {

@@ -21,7 +21,10 @@ function Tab(iframeParent) {
   let favicon = document.createElement("img");
   favicon.className = "favicon";
 
-  let title = document.createElement("hbox");
+  let titleHost = document.createElement("hbox");
+  titleHost.className = "titleHost";
+
+  let title = document.createElement("div");
   title.className = "title";
 
   let button = document.createElement("button");
@@ -33,8 +36,10 @@ function Tab(iframeParent) {
 
   hbox.appendChild(throbber);
   hbox.appendChild(favicon);
-  hbox.appendChild(title);
+  hbox.appendChild(titleHost);
   hbox.appendChild(button);
+
+  titleHost.appendChild(title);
 
   this.clearTabData();
 
