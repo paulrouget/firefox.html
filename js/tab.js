@@ -41,8 +41,14 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
       TabIframeDeck.remove(tabIframe);
     };
 
-    hbox.onclick = (event) => {
-      TabIframeDeck.select(tabIframe);
+    hbox.onmousedown = (event) => {
+      if(event.button == 1)
+      {
+        event.stopPropagation();
+        TabIframeDeck.remove(tabIframe);
+      } else {
+        TabIframeDeck.select(tabIframe);
+      }
     };
 
     hbox.appendChild(throbber);
