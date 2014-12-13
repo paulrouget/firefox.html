@@ -206,7 +206,7 @@
   border-color: #AAA;
 }
 
-.navbar > button {
+.navbar button {
   width: 18px;
   min-width: 18px;
   height: 18px;
@@ -219,46 +219,83 @@
   border-radius: var(--radius);
 }
 
-.navbar > button.disabled {
+.navbar button.disabled {
   pointer-events: none;
   opacity: 0.4;
 }
 
-.navbar > button:hover {
+.navbar button:hover {
   background-image: url(images/shared/Toolbar.png), var(--toolbarbutton-hover-background-image);
   border-color: var(--toolbarbutton-hover-bordercolor);
   box-shadow: var(--toolbarbutton-hover-boxshadow);
 }
 
-.navbar > button:hover:active {
+.navbar button:hover:active {
   background-image: url(images/shared/Toolbar.png), var(--toolbarbutton-active-background-image);
   border-color: var(--toolbarbutton-active-bordercolor);
   box-shadow: var(--toolbarbutton-active-boxshadow);
 }
 
 @media (min-resolution: 2dppx) {
-  .navbar > button {
+  .navbar button {
     background-image: url(images/shared/Toolbar@2x.png);
   }
-  .navbar > button:hover {
+  .navbar button:hover {
     background-image: url(images/shared/Toolbar@2x.png), var(--toolbarbutton-hover-background-image);
   }
-  .navbar > button:hover:active {
+  .navbar button:hover:active {
     background-image: url(images/shared/Toolbar@2x.png), var(--toolbarbutton-active-background-image);
   }
 }
 
+/* Navbar buttons */
+
+.navbuttons {
+  margin-right: -6px;
+}
+
+.navbuttons button.disabled {
+  opacity: 1;
+}
+
+.navbuttons .back-button {
+  background-position: -12px 6px;
+  border: 1px solid #AFAFAF;
+  border-radius: 100%;
+  padding: 0px;
+  background-size: 800px auto;
+  height: 30px;
+  width: 30px;
+  background-color: #FBFBFB;
+  margin-right: -4px;
+  z-index: 1;
+  background-clip: unset;
+}
+
+.navbuttons .forward-button {
+  background-position: -47px -1px;
+  background-color: #FBFBFB;
+  margin: 5px 0px 0px -7px;
+  height: 17px;
+  width: 23px;
+  border-right: 1px solid #AFAFAF;
+  border-bottom: 1px solid #AFAFAF;
+  border-radius: 0px;
+  background-clip: unset;
+}
+
+.navbuttons .forward-button.disabled {
+  display: none;
+}
+
+.reload-button {  background-position: -73px   0px; }
+.stop-button {    background-position: -90px   0px; }
+.menu-button {    background-position: -468px  0px; }
 
 body.loading .reload-button,
 body:not(.loading) .stop-button {
   display: none;
 }
-
-.back-button {    background-position: -36px   0px; }
-.forward-button { background-position: -54px   0px; }
-.reload-button {  background-position: -73px   0px; }
-.stop-button {    background-position: -90px   0px; }
-.menu-button {    background-position: -468px  0px; }
 
 .urlbar, .searchbar {
   background-color: white;
@@ -268,6 +305,12 @@ body:not(.loading) .stop-button {
   border-color: #B0AEB0;
   border-bottom-width: 1px;
   min-width: 0;
+}
+
+.urlbar {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-left: 4px;
 }
 
 .searchbar {

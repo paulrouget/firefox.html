@@ -36,14 +36,16 @@
       <hbox class="tabstrip"></hbox>
 
       <hbox class="navbar" align="center">
-        <button class="back-button"></button>
-        <button class="forward-button"></button>
-        <button class="reload-button"></button>
-        <button class="stop-button"></button>
+        <hbox class="navbuttons" flex="0">
+          <button class="back-button"></button>
+          <button class="forward-button"></button>
+        </hbox>
         <hbox class="urlbar" flex="1" align="center">
           <div class="identity"></div>
           <input placeholder="Search or enter address" class="urlinput" flex="1">
         </hbox>
+        <button class="reload-button"></button>
+        <button class="stop-button"></button>
         <hbox class="searchbar" flex="1" align="center">
           <div class="searchselector"></div>
           <input placeholder="Yahoo" class="searchinput">
