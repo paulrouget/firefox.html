@@ -44,6 +44,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     hbox.onmousedown = (event) => {
       if(event.button == 1)
       {
+        event.stopPropagation();
         TabIframeDeck.remove(tabIframe);
       } else {
         TabIframeDeck.select(tabIframe);
