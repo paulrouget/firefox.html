@@ -287,6 +287,10 @@ body:not(.loading) .stop-button {
   min-width: 0;
 }
 
+.searchinput {
+  width: 100%;
+}
+
 .searchselector {
   width: 16px;
   height: 16px;
