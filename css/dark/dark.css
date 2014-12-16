@@ -76,16 +76,16 @@
 }
 
 /* icons */
-.navbar > button {
+.navbar button {
   color: #ffffff;
   background-image: url(images/Toolbar.png);
 }
 
-.navbar > button:hover {
+.navbar button:hover {
   background-image: url(images/Toolbar.png), var(--toolbarbutton-hover-background-image);
 }
 
-.navbar > button:hover:active {
+.navbar button:hover:active {
   background-image: url(images/Toolbar.png), var(--toolbarbutton-active-background-image);
 }
 
@@ -110,13 +110,13 @@ body.sslev .identity {
 }
 
 @media (min-resolution: 2dppx) {
-  .navbar > button {
+  .navbar button {
     background-image: url(images/Toolbar@2x.png);
   }
-  .navbar > button:hover {
+  .navbar button:hover {
     background-image: url(images/Toolbar@2x.png), var(--toolbarbutton-hover-background-image);
   }
-  .navbar > button:hover:active {
+  .navbar button:hover:active {
     background-image: url(images/Toolbar@2x.png), var(--toolbarbutton-active-background-image);
   }
   .tab > .close-button {
