@@ -18,8 +18,7 @@
   margin: 0;
   padding: 0;
   border-width: 0;
-  font-family: sans-serif;
-  font-size: 12px;
+  font: message-box;
   image-rendering: -moz-crisp-edges;
 }
 

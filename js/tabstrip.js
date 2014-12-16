@@ -42,6 +42,9 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     hbox.className = "tab";
     hbox.setAttribute("align", "center");
 
+    // This attribute controls whether the tabs animate or not
+    hbox.setAttribute("animate", "true");
+
     let throbber = document.createElement("div");
     throbber.className = "throbber";
 
@@ -100,9 +103,12 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     },
 
     destroy: function() {
+      this.dom.setAttribute("closing", "true");
       this._untrackTabIframe();
       this._tabIframe = null;
-      this.dom.remove();
+      setTimeout(() => {
+        this.dom.remove();
+      }, 200);
     },
 
     select: function() {

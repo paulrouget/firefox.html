@@ -11,6 +11,18 @@
   --hwd-pixel: 1px;
 }
 
+[os="osx"] {
+	--ui-platform-border-radius: 3px;
+}
+
+[os="windows"] {
+	--ui-platform-border-radius: 0;
+}
+
+[os="linux"] {
+	--ui-platform-border-radius: 2px;
+}
+
 @media (min-resolution: 2dppx) {
   :root {
     --hwd-pixel: 0.5px;

@@ -27,12 +27,40 @@
   background-clip: border-box;
 }
 
+.tab[animate] {
+  animation: tab-animation 0.2s linear;
+}
+
+.tab[animate][closing] {
+  animation: tab-animation-reverse 0.2s linear;
+}
+
+@keyframes tab-animation {
+  0% {
+    flex-basis: 0;
+  }
+
+  100% {
+    flex-basis: 120px;
+  }
+}
+
+@keyframes tab-animation-reverse {
+  0% {
+    flex-basis: 120px;
+  }
+
+  100% {
+    flex-basis: 0;
+  }
+}
+
 [os="linux"] .dummy-tab-curve {
   /* These values are used in curvedTabs.js */
   --curve-border: transparent;
   --curve-gradient-start: #FBFBFB;
   --curve-gradient-end: #EDEDED;
-  --curve-hover-border: transparent;
+  --curve-hover-border: #BBB;
   --curve-hover-gradient-start: rgba(255,255,255,0.4);
   --curve-hover-gradient-end: rgba(255,255,255,0.4);
 }
@@ -41,8 +69,8 @@
   /* These values are used in curvedTabs.js */
   --curve-border: transparent;
   --curve-gradient-start: #FBFBFB;
-  --curve-gradient-end: #EDEDED;
-  --curve-hover-border: #AAA;
+  --curve-gradient-end: #F8F8F8;
+  --curve-hover-border: transparent;
   --curve-hover-gradient-start: rgba(255, 255, 255, 0.4);
   --curve-hover-gradient-end: rgba(255, 255, 255, 0.4);
 }
@@ -117,8 +145,6 @@
   overflow-x: hidden;
   z-index: 1000;
   opacity: 0.7;
-  font: -moz-field;
-  font-size: 12px;
 }
 
 .tab.selected > .title {

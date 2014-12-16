@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 :root {
+  /* Toolbar buttons */
   --toolbarbutton-hover-background-image: linear-gradient(hsla(0,0%,100%,.7), hsla(0,0%,100%,.2)),
                                           linear-gradient(hsla(0,0%,100%,.3), hsla(0,0%,100%,.3));
   --toolbarbutton-hover-boxshadow: 0 1px 0 hsla(0,0%,100%,.3) inset, 0 0 0 1px hsla(0,0%,100%,.2) inset, 0 1px 0 hsla(0,0%,0%,.03);
@@ -12,17 +13,43 @@
   --toolbarbutton-active-bordercolor: rgb(154,154,154);
   --toolbarbutton-active-background-image: linear-gradient(hsla(0,0%,100%,.7), hsla(0,0%,100%,.4)),
                                            linear-gradient(rgba(154,154,154,.5),rgba(154,154,154,.5));
+
+  /* Inputs */
+  --ui-inputs-background: #FFF;
+  --ui-inputs-focus-boxshadow: none;
+}
+
+[os="osx"] {
+  --navbar-background: linear-gradient(#EDEDED, #D3D3D3);
+  --navbar-bordercolor: #AAA;
+
+  --ui-inputs-bordercolor: transparent;
+  --ui-inputs-focus-bordercolor: transparent;
+  --ui-inputs-focus-boxshadow: 0 0 0 3px #91B8E3;
+}
+
+[os="windows"] {
+  --navbar-background: #F8F8F8;
+  --navbar-bordercolor: #CCC;
+
+  --ui-inputs-bordercolor: #CCC;
+  --ui-inputs-focus-bordercolor: #4595E5;
+}
+
+[os="linux"] {
+  --navbar-background: #EDEDED;
+  --navbar-bordercolor: #BBB;
+
+  --ui-inputs-bordercolor: #BBB;
+  --ui-inputs-focus-bordercolor: #4595E5;
 }
 
 .navbar {
   padding: 4px 6px;
-  background-image: linear-gradient(#EDEDED, #D3D3D3);
-}
-
-[os="osx"] .navbar {
   border-style: solid;
   border-width: var(--hwd-pixel) 0;
-  border-color: #AAA;
+  border-color: var(--navbar-bordercolor);
+  background-color: var(--navbar-background);
 }
 
 .navbar > button {
@@ -35,7 +62,7 @@
   background-clip: content-box, border-box, border-box;
   background-image: url(images/shared/Toolbar.png);
   background-size: 756px 72px;
-  border-radius: 3px;
+  border-radius: var(--ui-platform-border-radius);
 }
 
 .navbar > button.disabled {
@@ -80,12 +107,13 @@
 .menu-button {    background-position: -468px  0px; }
 
 .urlbar, .searchbar {
-  background-color: white;
-  border-radius: 3px;
+  background: var(--ui-inputs-background);
+  border-radius: var(--ui-platform-border-radius);
   margin: 4px 6px 3px;
   border-style: solid;
-  border-color: #B0AEB0;
-  border-bottom-width: 1px;
+  border-color: var(--ui-inputs-bordercolor);
+  border-width: 1px;
+  display: flex;
   min-width: 0;
 }
 
@@ -94,16 +122,17 @@
 }
 
 .urlbar.focus, .searchbar.focus {
-  border-color: white;
-  box-shadow: 0 0 0 3px #91B8E3;
+  border-color: var(--ui-inputs-focus-bordercolor);
+  box-shadow: var(--ui-inputs-focus-boxshadow);
 }
 
 .urlinput, .searchinput {
-  font: -moz-field;
+  font-family: inherit;
   font-size: 12px;
   line-height: 22px;
   vertical-align: bottom;
   min-width: 0;
+  flex: 1;
 }
 
 .searchselector {
@@ -112,8 +141,8 @@
   margin: 0 6px;
   background-image: url(images/shared/Search.png);
   background-repeat: no-repeat;
-  background-position: 1px 1px;
-  background-size: 14px 14px;
+  background-position: 0 -2px;
+  background-size: 60px 20px;
 }
 
 @media (min-resolution: 2dppx) {
