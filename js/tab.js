@@ -17,6 +17,19 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
   "use strict";
 
+  let link = document.createElement('link');
+  link.rel = "import";
+  link.href = "tabs.html";
+  link.onload = function(e) {
+    let node = link.import.body.firstChild.cloneNode(true);
+    let outervbox = document.querySelector("#outervbox");
+    let outerhbox = document.querySelector("#outerhbox");
+    outervbox.insertBefore(node, outerhbox);
+
+    init();
+  };
+  document.head.appendChild(link);
+
   const allTabs = new Map();
 
   function Tab(tabIframe) {
@@ -130,54 +143,57 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     },
   };
 
-  TabIframeDeck.on("add", (event, detail) => {
-    let tabIframe = detail.tabIframe;
-    let tab = new Tab(tabIframe);
-    allTabs.set(tabIframe, tab);
-    if (tabIframe == TabIframeDeck.getSelected()) {
+  function init() {
+
+    TabIframeDeck.on("add", (event, detail) => {
+      let tabIframe = detail.tabIframe;
+      let tab = new Tab(tabIframe);
+      allTabs.set(tabIframe, tab);
+      if (tabIframe == TabIframeDeck.getSelected()) {
+        tab.select();
+      }
+    });
+
+    TabIframeDeck.on("remove", (event, detail) => {
+      let tab = allTabs.get(detail.tabIframe);
+      if (tab) {
+        tab.destroy();
+        allTabs.delete(detail.tabIframe);
+      }
+    });
+
+    TabIframeDeck.on("select", (event, detail) => {
+      let tab = allTabs.get(detail.tabIframe);
+      if (tab) {
+        tab.select();
+      }
+    });
+
+    TabIframeDeck.on("unselect", (event, detail) => {
+      let tab = allTabs.get(detail.tabIframe);
+      if (tab) {
+        tab.unselect();
+      }
+    });
+
+    for (let tabIframe of TabIframeDeck) {
+      let tab = new Tab(tabIframe);
+      allTabs.set(tabIframe, tab);
+    }
+
+    let tabIframe = TabIframeDeck.getSelected();
+    if (tabIframe) {
+      let tab = allTabs.get(tabIframe);
       tab.select();
     }
-  });
 
-  TabIframeDeck.on("remove", (event, detail) => {
-    let tab = allTabs.get(detail.tabIframe);
-    if (tab) {
-      tab.destroy();
-      allTabs.delete(detail.tabIframe);
+    /* Build curved tabs */
+
+    if (document.readyState == "complete") {
+      BuildCurvedTabs();
+    } else {
+      document.addEventListener("readystatechange", onDocumentLoaded);
     }
-  });
-
-  TabIframeDeck.on("select", (event, detail) => {
-    let tab = allTabs.get(detail.tabIframe);
-    if (tab) {
-      tab.select();
-    }
-  });
-
-  TabIframeDeck.on("unselect", (event, detail) => {
-    let tab = allTabs.get(detail.tabIframe);
-    if (tab) {
-      tab.unselect();
-    }
-  });
-
-  for (let tabIframe of TabIframeDeck) {
-    let tab = new Tab(tabIframe);
-    allTabs.set(tabIframe, tab);
-  }
-
-  let tabIframe = TabIframeDeck.getSelected();
-  if (tabIframe) {
-    let tab = allTabs.get(tabIframe);
-    tab.select();
-  }
-
-  /* Build curved tabs */
-
-  if (document.readyState == "complete") {
-    BuildCurvedTabs();
-  } else {
-    document.addEventListener("readystatechange", onDocumentLoaded);
   }
 
   function onDocumentLoaded() {

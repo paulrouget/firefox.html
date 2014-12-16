@@ -43,7 +43,6 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
   require([
     'js/keybindings',
-    'js/tab',
-    'js/navbar'
+    'js/tab'
   ]);
 })
