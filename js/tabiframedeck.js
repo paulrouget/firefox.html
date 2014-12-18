@@ -61,7 +61,12 @@ define(['js/tabiframe', 'js/eventemitter', 'js/keybindings'],
       tabIframe.on('mozbrowseropenwindow', this.onMozBrowserOpenWindow);
       tabIframe.on('mozbrowserlocationchange', this.saveSession);
 
-      this.emit('add', {tabIframe: tabIframe});
+      // tabIframe already added to _tabIframeArray. Hence the -1
+      let tabPosition = _tabIframeArray.length - 1;
+      if (options.tabPosition) {
+        tabPosition = options.tabPosition;
+      }
+      this.emit('add', {tabIframe: tabIframe, tabPosition: tabPosition});
 
       if (options.url) {
         tabIframe.setLocation(options.url);
