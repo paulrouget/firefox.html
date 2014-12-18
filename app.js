@@ -24,25 +24,23 @@ if (navigator.appVersion.indexOf('X11') >= 0) {
   document.body.setAttribute('os', 'linux');
 }
 
-// IS_PRIVILEGED is false if Firefox.html runs in a regular browser,
-// with no Browser API.
-
-window.IS_PRIVILEGED = !!HTMLIFrameElement.prototype.setVisible;
 
 require.config({
-  scriptType: 'text/javascript;version=1.8'
+  scriptType: 'text/javascript;version=1.8',
+  paths: {
+    "react": "/lib/react/react@0.12.1"
+  },
+  shim: {
+    "react": {
+      exports: "React"
+    }
+  }
 });
 
-require(['js/tabiframedeck'], function(TabIframeDeck) {
-
-  'use strict';
-
-  TabIframeDeck.on('selectedTabIframeUpdate', (tabIframe) => {
-    document.title = 'Firefox - ' + tabIframe.title;
-  });
-
-  require([
-    'js/tabstrip',
-    'js/navbar',
-  ]);
-})
+require(['react', 'js/browser'], (React, Browser) => {
+  // IS_PRIVILEGED is false if Firefox.html runs in a regular browser,
+  // with no Browser API.
+  React.render(React.createElement(Browser, {
+    isPrivileged: !!HTMLIFrameElement.prototype.setVisible
+  }), document.body);
+});

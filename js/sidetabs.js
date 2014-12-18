@@ -31,8 +31,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // Tab JS object. This should use web components.
   // issue #64
   function Tab(tabIframe) {
-    let hbox = document.createElement('hbox');
-    hbox.className = 'vtab';
+    let hbox = document.createElement('div');
+    hbox.className = 'vtab hbox';
     hbox.setAttribute('align', 'center');
 
     let throbber = document.createElement('div');
@@ -41,8 +41,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     let favicon = document.createElement('img');
     favicon.className = 'favicon';
 
-    let titleWrapper = document.createElement('hbox');
-    titleWrapper.className = 'title-wrapper';
+    let titleWrapper = document.createElement('div');
+    titleWrapper.className = 'title-wrapper hbox';
 
     let title = document.createElement('span');
     title.className = 'title';

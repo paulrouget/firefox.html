@@ -26,8 +26,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // Build the container. A hbox on top of the deck.
   // <hbox class='tabstrip'></hbox>
   // Tabs will be appended in there.
-  let tabstrip = document.createElement('hbox');
-  tabstrip.className = 'tabstrip toolbar';
+  let tabstrip = document.createElement('div');
+  tabstrip.className = 'tabstrip toolbar hbox';
   let outervbox = document.querySelector('#outervbox');
   outervbox.insertBefore(tabstrip, outervbox.firstChild);
 
@@ -38,8 +38,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // Tab JS object. This should use web components.
   // issue #64
   function Tab(tabIframe) {
-    let hbox = document.createElement('hbox');
-    hbox.className = 'tab';
+    let hbox = document.createElement('div');
+    hbox.className = 'tab hbox';
     hbox.setAttribute('align', 'center');
 
     let throbber = document.createElement('div');
@@ -48,8 +48,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     let favicon = document.createElement('img');
     favicon.className = 'favicon';
 
-    let title = document.createElement('hbox');
-    title.className = 'title';
+    let title = document.createElement('div');
+    title.className = 'title hbox';
 
     let button = document.createElement('button');
     button.className = 'close-button';
