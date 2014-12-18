@@ -37,7 +37,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
   // Tab JS object. This should use web components.
   // issue #64
-  function Tab(tabIframe) {
+  function Tab(tabIframe, tabPosition) {
     let hbox = document.createElement('hbox');
     hbox.className = 'tab';
     hbox.setAttribute('align', 'center');
@@ -84,7 +84,20 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     this._tabIframe = tabIframe;
     this._trackTabIframe();
 
-    tabstrip.appendChild(this._dom);
+    // Add to end if tabPosition is not mentioned
+    tabPosition = typeof tabPosition !== 'undefined' ? tabPosition : -1;
+    if (tabPosition == -1) {
+      this._position = tabstrip.children.length;
+    } else {
+      this._position = tabPosition;
+    }
+
+    // If position is 0, append to end. Else, insert at position
+    if(this._position === 0) {
+      tabstrip.appendChild(this._dom);
+    } else {
+      tabstrip.insertBefore(this._dom, tabstrip.children[this._position]);
+    }
 
     this.updateDom();
   }
@@ -163,7 +176,8 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
   TabIframeDeck.on('add', (event, detail) => {
     let tabIframe = detail.tabIframe;
-    let tab = new Tab(tabIframe);
+    let tabPosition = detail.tabPosition ? detail.tabPosition : -1;
+    let tab = new Tab(tabIframe, tabPosition);
     allTabs.set(tabIframe, tab);
     if (tabIframe == TabIframeDeck.getSelected()) {
       tab.select();
