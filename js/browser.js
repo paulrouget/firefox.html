@@ -28,7 +28,7 @@ define((require, exports, module) => {
         isPrivileged: true,
         frameID: 0,
         frames: [{id: 0, selected: true}],
-        input: {focus: false},
+        input: {focused: false},
         search: {focused: false, query: ""}
       }
     },
