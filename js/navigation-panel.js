@@ -28,11 +28,17 @@ define((require, exports, module) => {
 
       link.addEventListener("load", this.onStyleReady)
     },
-    patch({input, frame}) {
+    patch({input, frame, search}) {
       if (input) {
         this.props.resetInput(Object.assign({},
                                             this.props.input,
                                             input))
+      }
+
+      if (search) {
+        this.props.resetSearch(Object.assign({},
+                                            this.props.search,
+                                            search))
       }
 
       if (frame) {

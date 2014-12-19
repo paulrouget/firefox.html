@@ -29,7 +29,7 @@ define((require, exports, module) => {
         frameID: 0,
         frames: [{id: 0, selected: true}],
         input: {focus: false},
-        search: {focus: false}
+        search: {focused: false, query: ""}
       }
     },
     selectFrame({id}) {
@@ -57,7 +57,9 @@ define((require, exports, module) => {
     resetInput(state) {
       this.setState({input: state})
     },
-
+    resetSearch(state) {
+      this.setState({search: state})
+    },
     render() {
        const {frames, input, search} = this.state
        console.log(this.state)
@@ -75,8 +77,9 @@ define((require, exports, module) => {
 
           React.createElement(NavigationPanel, {
             frame, input, search,
+            resetFrame: this.resetFrame,
             resetInput: this.resetInput,
-            resetFrame: this.resetFrame
+            resetSearch: this.resetSearch
           }),
 
           DOM.div({className: "hbox flex-1",
