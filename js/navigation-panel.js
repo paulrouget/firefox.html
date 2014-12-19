@@ -103,6 +103,25 @@ define((require, exports, module) => {
       this.patch({search: {focused: false}});
     },
 
+    // Focus and selection management can not be expressed declaratively
+    // at least not with reacts virtual dom. There for focus management
+    // and selection management is handled manually post update.
+    componentDidUpdate(past) {
+      const view = this.getDOMNode()
+      const current = this.props
+
+      if (current.input.focused && !past.input.focused) {
+        const node = view.querySelector(".urlinput")
+        node.focus()
+        node.select()
+      }
+
+      if (current.search.focused && past.search.focused) {
+        const node = view.querySelector(".searchinput")
+        node.focus()
+        node.select()
+      }
+    },
     render() {
       const { frame, input, search } = this.props
 
