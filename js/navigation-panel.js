@@ -133,13 +133,12 @@ define((require, exports, module) => {
           onClick: this.stop
         }),
         DOM.div({
-          className: "urlbar hbox flex-1 align center",
+          className: "urlbar hbox flex-1 align center" +
+                     (input.focused ? " focus" : ""),
           key: "url-bar"
         }, [
           DOM.div({className: "identity"}),
-          DOM.input({className: ["urlinput",
-                                 "flex-1",
-                                 input.focused ? "focus" : ""].join(" "),
+          DOM.input({className: "urlinput flex-1",
                      value: frame && (frame.input || frame.url),
                      placeholder: "Search or enter address",
 
@@ -149,12 +148,12 @@ define((require, exports, module) => {
                      onBlur: this.onInputBlur})
         ]),
         DOM.div({
-          className: "searchbar hbox flex-1 align center",
+          className: "searchbar hbox flex-1 align center" +
+                     (search.focused ? " focus" : ""),
           key: "search-bar"
         }, [
           DOM.div({className: "searchselector"}),
-          DOM.input({className: ["searchinput",
-                                 search.focused ? "focus" : ""].join(" "),
+          DOM.input({className: "searchinput",
                      value: search.query,
                      placeholder: "Yahoo",
 
