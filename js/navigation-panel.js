@@ -90,10 +90,10 @@ define((require, exports, module) => {
     onSearchChange(event) {
       this.patch({search: {query: event.target.value}})
     },
-    onInputFocus() {
+    onSearchFocus() {
       this.patch({search: {focused: true}});
     },
-    onInputBlur() {
+    onSearchBlur() {
       this.patch({search: {focused: false}});
     },
 
