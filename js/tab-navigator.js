@@ -22,7 +22,8 @@ define((require, exports, module) => {
       const { id, selected, title, favicon, loading, url } = this.props.frame
 
       const classList = ["tab", "hbox", "align", "center",
-                         loading ? "loading" : "loaded"]
+                         loading ? "loading" : "loaded",
+                         selected ? "selected" : ""]
 
       return DOM.div({
         className: classList.join(" "),
