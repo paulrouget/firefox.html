@@ -11,7 +11,8 @@ define((require, exports, module) => {
   exports.readModifier = readModifier
 
   const readKeyBinding = event => {
-    const keys = modifiers.includes(event.key.toLowerCase()) ? [] : [event.key]
+    const key = event.key.toLowerCase()
+    const keys = modifiers.includes(key) ? [] : [key]
     const chord = []
     modifiers.forEach(key => {
        if (event[`${key}Key`]) {
