@@ -55,7 +55,8 @@ vbox,
   flex-flow: column;
 }
 
-[hidden="true"] {
+[hidden="true"],
+[hidden=""] {
   display: none;
 }
 
