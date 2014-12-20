@@ -117,7 +117,7 @@ define((require, exports, module) => {
           node.removeAttribute("hidden")
           node.focus()
         } else {
-          node.setAttribute("hidden", true)
+          node.setAttribute("hidden", "true")
         }
       }
 
@@ -149,9 +149,38 @@ define((require, exports, module) => {
     },
 
     render() {
-      return DOM.div({className: "frame box flex-1"})
+      return DOM.div({className: "frame box flex-1",
+                      hidden: !this.props.selected})
     }
   })
+
+  // Frame transformations.
+
+  Frame.reload = frame =>
+    Object.assign({}, frame, {action: "reload"})
+
+  Frame.stop = frame =>
+    Object.assign({}, frame, {action: "stop"})
+
+  Frame.goBack = frame =>
+    Object.assign({}, frame, {action: "goBack"})
+
+  Frame.goForward = frame =>
+    Object.assign({}, frame, {action: "goForward"})
+
+
+  Frame.MIN_ZOOM = 0.5
+  Frame.MAX_ZOOM = 2
+
+  Frame.zoomIn = frame =>
+    Object.assign({}, frame, {zoom: Math.min(Frame.MAX_ZOOM, frame.zoom + 0.1)})
+
+  Frame.zoomOut = frame =>
+    Object.assign({}, frame, {zoom: Math.max(Frame.MIN_ZOOM, frame.zoom - 0.1)})
+
+  Frame.resetZoom = frame =>
+    Object.assign({}, frame, {zoom:1})
+
 
   exports.Frame = Frame;
 })
