@@ -24,8 +24,8 @@ define((require, exports, module) => {
     }),
     componentWillReceiveProps({keyBinding}) {
       const current = this.props
-      if (keyBinding && keyBinding != current.keyBinding) {
-        this.onKeybinding(keyBinding)
+      if (keyBinding.timeStamp != current.keyBinding.timeStamp) {
+        this.onKeyBinding(keyBinding.binding)
       }
     },
     componentWillMount() {

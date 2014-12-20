@@ -32,7 +32,7 @@ define((require, exports, module) => {
         frames: [{id: 0, selected: true}],
         input: {focused: false},
         search: {focused: false, query: ""},
-        keyBinding: "",
+        keyBinding: {},
       }
     },
     selectFrame({id}) {
@@ -64,8 +64,11 @@ define((require, exports, module) => {
       this.setState({search: state})
     },
 
-    onKeyPress(event) {
-      this.setState({keyBinding: readKeyBinding(event)});
+    onKey(event) {
+      this.setState({keyBinding: {
+        timeStamp: event.timeStamp,
+        binding: readKeyBinding(event)
+      }});
     },
     render() {
        const {frames, input, search, keyBinding} = this.state
@@ -75,7 +78,7 @@ define((require, exports, module) => {
 
         return DOM.div({className: "vbox flex-1",
                         id: "outervbox",
-                        onKeyPress: this.onKeyPress}, [
+                        onKeyDown: this.onKey}, [
           React.createElement(TabNavigator, {
             frames,
             addTab: this.addFrame,
