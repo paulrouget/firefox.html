@@ -17,8 +17,8 @@ define((require, exports, module) => {
 
   const selectFrame = (frames, id) =>
     frames.map(frame =>
-               frame.selected && frame.id != id ? SelectFrame(frame) :
-               !frame.selected && frame.id == id ? DeselectFrame(frame) :
+               frame.selected && frame.id != id ? DeselectFrame(frame) :
+               !frame.selected && frame.id == id ? SelectFrame(frame) :
                frame)
 
   const makeFrame = (id, state) =>
@@ -39,15 +39,25 @@ define((require, exports, module) => {
       const {frames} = this.state
       this.setState({frames: selectFrame(frames, id)})
     },
-    addFrame(state) {
-      const {frameId, frames} = this.state
-      this.setState({frameID: frameID + 1,
-                     frames: [...frames,
-                              makeFrame(frameId, state)]})
+    addFrame(options) {
+      const {state} = this
+      const frameID = state.frameID + 1
+      const frames = [...state.frames]
+      const selected = frames.find(({selected}) => selected)
+      const frame = makeFrame(frameID, options)
+      frames.splice(frames.indexOf(selected), 1,
+                    frame.selected ? DeselectFrame(selected) : selected,
+                    frame)
+
+      this.setState({frameID, frames})
     },
     removeFrame({id}) {
-      const {frames} = this.state
-      this.setState({frames: frames.filter(frame => frame.id !== id)})
+      const {state} = this
+      const frames = [...state.frames]
+      const index = frames.findIndex(frame => frame.id == id)
+      frames.splice(index, 1)
+      const selected = frames[index] || frames[frames.length - 1]
+      this.setState({frames: selectFrame(frames, selected.id)})
     },
     resetFrame(state) {
       const {frames} = this.state
@@ -97,11 +107,13 @@ define((require, exports, module) => {
                    id: "outerhbox"}, [
 
             React.createElement(FrameDeck, {
-              frames,
+              selected: frame,
+              frames, keyBinding,
               isPrivileged,
               addFrame: this.addFrame,
               removeFrame: this.removeFrame,
-              resetFrame: this.resetFrame
+              resetFrame: this.resetFrame,
+              selectFrame: this.selectFrame
             })
           ]),
           DOM.div({hidden: "true",
