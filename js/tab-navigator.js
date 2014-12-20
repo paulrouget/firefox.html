@@ -27,14 +27,14 @@ define((require, exports, module) => {
 
       return DOM.div({
         className: classList.join(" "),
-        key: `tab-${id}`
+        key: `tab-${id}`,
+        onMouseDown: this.selectTab,
+        onMouseUp: this.onMouseUp
       }, [
         DOM.div({className: "throbber"}),
         DOM.img(Object.assign({className: "favicon"},
                               favicon ? {src: favicon} : {})),
-        DOM.div({className: "title hbox",
-                 onMouseDown: this.selectTab,
-                 onMouseUp: this.onMouseUp},
+        DOM.div({className: "title hbox"},
                 title),
         DOM.button({className: "close-button",
                     onMouseUp: this.closeTab})
