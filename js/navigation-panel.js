@@ -18,9 +18,9 @@ define((require, exports, module) => {
   exports.readInputURL = readInputURL
 
   const NavigationPanel = React.createClass({
-    onKeybinding: KeyBindings({
-      "@meta-l": "onInputFocus",
-      "@meta-k": "onSearchFocus"
+    onKeyBinding: KeyBindings({
+      "@meta l": "onInputFocus",
+      "@meta k": "onSearchFocus"
     }),
     componentWillReceiveProps({keyBinding}) {
       const current = this.props

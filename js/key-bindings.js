@@ -19,13 +19,13 @@ define((require, exports, module) => {
        }
     })
 
-    return [...chord, ...keys].join("-")
+    return [...chord, ...keys].join(" ")
   }
   exports.readKeyBinding = readKeyBinding
 
   const writeKeyBinding = binding => {
     const chord = []
-    const keys = new Set(binding.trim().toLowerCase().split("-"))
+    const keys = new Set(binding.trim().toLowerCase().split(" "))
     modifiers.forEach(key => {
       if (keys.has(key)) {
         keys.delete(key)
@@ -37,7 +37,7 @@ define((require, exports, module) => {
       }
     })
 
-    return [...chord, ...[...keys].sort()].join("-")
+    return [...chord, ...[...keys].sort()].join(" ")
   }
 
   const KeyBindings = keyMap => {
