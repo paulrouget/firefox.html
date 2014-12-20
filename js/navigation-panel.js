@@ -1,6 +1,7 @@
 define((require, exports, module) => {
   "use strict";
 
+  const {KeyBindings} = require("js/key-bindings")
   const React = require("react")
   const urlHelper = require("js/urlhelper")
   const DOM  = React.DOM
@@ -17,6 +18,16 @@ define((require, exports, module) => {
   exports.readInputURL = readInputURL
 
   const NavigationPanel = React.createClass({
+    onKeybinding: KeyBindings({
+      "@meta-l": "onInputFocus",
+      "@meta-k": "onSearchFocus"
+    }),
+    componentWillReceiveProps({keyBinding}) {
+      const current = this.props
+      if (keyBinding && keyBinding != current.keyBinding) {
+        this.onKeybinding(keyBinding)
+      }
+    },
     componentWillMount() {
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -28,6 +39,13 @@ define((require, exports, module) => {
 
       link.addEventListener("load", this.onStyleReady)
     },
+    shouldComponentUpdate({input, frame, search}) {
+      const current = this.props
+      return input !== current.input ||
+             search !== current.search ||
+             frame !== current.frame
+    },
+
     patch({input, frame, search}) {
       if (input) {
         this.props.resetInput(Object.assign({},
@@ -116,7 +134,7 @@ define((require, exports, module) => {
         node.select()
       }
 
-      if (current.search.focused && past.search.focused) {
+      if (current.search.focused && !past.search.focused) {
         const node = view.querySelector(".searchinput")
         node.focus()
         node.select()

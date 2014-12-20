@@ -6,6 +6,8 @@ define((require, exports, module) => {
   const {FrameDeck} = require("js/frame-deck")
   const {TabNavigator} = require("js/tab-navigator")
   const {NavigationPanel} = require("js/navigation-panel")
+  const {readKeyBinding} = require("js/key-bindings")
+
 
   const SelectFrame = frame =>
     Object.assign({}, frame, {selected: true})
@@ -29,7 +31,8 @@ define((require, exports, module) => {
         frameID: 0,
         frames: [{id: 0, selected: true}],
         input: {focused: false},
-        search: {focused: false, query: ""}
+        search: {focused: false, query: ""},
+        keyBinding: "",
       }
     },
     selectFrame({id}) {
@@ -60,14 +63,19 @@ define((require, exports, module) => {
     resetSearch(state) {
       this.setState({search: state})
     },
+
+    onKeyPress(event) {
+      this.setState({keyBinding: readKeyBinding(event)});
+    },
     render() {
-       const {frames, input, search} = this.state
+       const {frames, input, search, keyBinding} = this.state
        console.log(this.state)
        const {isPrivileged} = this.props
        const frame = frames.find(frame => frame.selected);
 
         return DOM.div({className: "vbox flex-1",
-                              id: "outervbox"}, [
+                        id: "outervbox",
+                        onKeyPress: this.onKeyPress}, [
           React.createElement(TabNavigator, {
             frames,
             addTab: this.addFrame,
@@ -76,7 +84,7 @@ define((require, exports, module) => {
           }),
 
           React.createElement(NavigationPanel, {
-            frame, input, search,
+            frame, input, search, keyBinding,
             resetFrame: this.resetFrame,
             resetInput: this.resetInput,
             resetSearch: this.resetSearch
