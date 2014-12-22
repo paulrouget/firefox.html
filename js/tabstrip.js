@@ -87,16 +87,19 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     // Add to end if tabPosition is not mentioned
     tabPosition = typeof tabPosition !== 'undefined' ? tabPosition : -1;
     if (tabPosition == -1) {
-      this._position = tabstrip.children.length;
+      tabPosition = tabstrip.children.length;
     } else {
-      this._position = tabPosition;
+      tabPosition = tabPosition;
     }
 
+    this._position = tabPosition;
+    this._tabIframe.position = tabPosition;
+
     // If position is 0, append to end. Else, insert at position
-    if(this._position === 0) {
+    if(tabPosition === 0) {
       tabstrip.appendChild(this._dom);
     } else {
-      tabstrip.insertBefore(this._dom, tabstrip.children[this._position]);
+      tabstrip.insertBefore(this._dom, tabstrip.children[tabPosition]);
     }
 
     this.updateDom();
@@ -110,6 +113,14 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
     get dom() {
       return this._dom;
+    },
+
+    get position() {
+      return this._position;
+    },
+
+    set position(newPosition) {
+      this._position = newPosition;
     },
 
     destroy: function() {
@@ -189,6 +200,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     if (tab) {
       tab.destroy();
       allTabs.delete(detail.tabIframe);
+      resetTabPositions();
     }
   });
 
@@ -215,6 +227,19 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   if (tabIframe) {
     let tab = allTabs.get(tabIframe);
     tab.select();
+  }
+
+  /* Update tabIframePosition */
+
+  function resetTabPositions() {
+    for (let tabIframe of TabIframeDeck) {
+      let tab = allTabs.get(tabIframe);
+      let tabPosition = TabIframeDeck.getTabPosition(tabIframe);
+
+      tab.position = tabPosition;
+      tab.tabIframe.position = tabPosition;
+      tab.updateDom();
+    }
   }
 
   /* Build curved tabs */
