@@ -12,7 +12,7 @@
 
 define(function() {
 
-  "use strict";
+  'use strict';
 
   let isWorker = false;
 
@@ -25,7 +25,7 @@ define(function() {
    *        Bind all public methods of EventEmitter to
    *        the aObjectToDecorate object.
    */
-  EventEmitter.decorate = function EventEmitter_decorate (aObjectToDecorate) {
+  EventEmitter.decorate = function EventEmitter_decorate(aObjectToDecorate) {
     let emitter = new EventEmitter();
     aObjectToDecorate.on = emitter.on.bind(emitter);
     aObjectToDecorate.off = emitter.off.bind(emitter);
@@ -122,13 +122,13 @@ define(function() {
         // If listeners were removed during emission, make sure the
         // event handler we're going to fire wasn't removed.
         if (originalListeners === this._eventEmitterListeners.get(aEvent) ||
-            this._eventEmitterListeners.get(aEvent).some(function(l) l === listener)) {
+            this._eventEmitterListeners.get(aEvent).some(l => l === listener)) {
           try {
             listener.apply(null, arguments);
           }
           catch (ex) {
             // Prevent a bad listener from interfering with the others.
-            let msg = ex + ": " + ex.stack;
+            let msg = ex + ': ' + ex.stack;
             console.error(msg);
           }
         }
@@ -136,7 +136,7 @@ define(function() {
     },
 
     logEvent: function(aEvent, args) {
-      // console.log("Event:" + args[0], args);
+      // console.log('Event:' + args[0], args);
     },
   };
 

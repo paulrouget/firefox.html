@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/**
- * darktheme.js
- *
- */
+window.addEventListener('load', () => {
 
-define(function() {
+  // require.js
 
-  'use strict';
+  if (!('require' in window)) {
+    alert(`Missing require.js library.
+Did you forget to pull the submodules?
+Type: git submodule update --init`);
+  }
 
-  document.querySelector('link[title=dark]').disabled = false;
 });

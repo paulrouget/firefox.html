@@ -1,3 +1,7 @@
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/paulrouget/firefox.html?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+![build](https://travis-ci.org/paulrouget/firefox.html.svg?branch=master)
+
 ![light theme](https://cloud.githubusercontent.com/assets/373579/5355479/d4d650d8-7f93-11e4-9645-88c93c8c495a.png)
 
 ![black theme](https://cloud.githubusercontent.com/assets/373579/5382222/a9bc89d8-80a8-11e4-86ad-46a128a67fc5.png)
@@ -30,7 +34,7 @@ git submodule update --init
 
 **Contribute**
 
-See ![`HACKING.md`](HACKING.md).
+See [`HACKING.md`](HACKING.md).
 
 ![Firefox.html screenshot](https://cloud.githubusercontent.com/assets/373579/5206795/f2153b1c-75a4-11e4-8bb7-da6c94c0a050.png)
 

@@ -34,6 +34,7 @@
 
   --ui-inputs-bordercolor: #CCC;
   --ui-inputs-focus-bordercolor: #4595E5;
+  --ui-inputs-focus-boxshadow: none;
 }
 
 [os="linux"] {
@@ -42,6 +43,7 @@
 
   --ui-inputs-bordercolor: #BBB;
   --ui-inputs-focus-bordercolor: #4595E5;
+  --ui-inputs-focus-boxshadow: none;
 }
 
 .navbar {
@@ -49,7 +51,7 @@
   border-style: solid;
   border-width: var(--hwd-pixel) 0;
   border-color: var(--navbar-bordercolor);
-  background-color: var(--navbar-background);
+  background: var(--navbar-background);
 }
 
 .navbar > button {
