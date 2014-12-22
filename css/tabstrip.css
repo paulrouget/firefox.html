@@ -37,21 +37,25 @@
 
 @keyframes tab-animation {
   0% {
-    flex-basis: 0;
+    transform: translateX(-100%) scale(0);
+    opacity: 0;
   }
 
   100% {
-    flex-basis: 120px;
+    transform: translateX(0) scale(1);
+    opacity: 1;
   }
 }
 
 @keyframes tab-animation-reverse {
   0% {
-    flex-basis: 120px;
+    transform: translateX(0) scale(1);
+    opacity: 1;
   }
 
   100% {
-    flex-basis: 0;
+    transform: translateX(-100%) scale(0);
+    opacity: 0;
   }
 }
 
