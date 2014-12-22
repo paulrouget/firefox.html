@@ -51,7 +51,7 @@
   border-style: solid;
   border-width: var(--hwd-pixel) 0;
   border-color: var(--navbar-bordercolor);
-  background-color: var(--navbar-background);
+  background: var(--navbar-background);
 }
 
 .navbar > button {

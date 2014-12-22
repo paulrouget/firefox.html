@@ -28,10 +28,12 @@
 }
 
 .tab[animate] {
+  will-change: transform;
   animation: tab-animation 0.2s linear;
 }
 
 .tab[animate][closing] {
+  pointer-events: none;
   animation: tab-animation-reverse 0.2s linear;
 }
 
