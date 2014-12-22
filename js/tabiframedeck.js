@@ -54,18 +54,19 @@ define(['js/tabiframe', 'js/eventemitter', 'js/keybindings'],
       let tabIframe = document.createElement('tab-iframe');
       tabIframe.setAttribute('flex', '1');
 
+      let tabPosition = this.getCount();
+      if (options.tabPosition) {
+        tabPosition = options.tabPosition;
+      }
+
+      // Inserting in the dom and array at the given position
       let parent = document.querySelector('.iframes');
-      parent.appendChild(tabIframe);
-      _tabIframeArray.push(tabIframe);
+      parent.insertBefore(tabIframe, parent.children[tabPosition]);
+      _tabIframeArray.splice(tabPosition, 0, tabIframe);
 
       tabIframe.on('mozbrowseropenwindow', this.onMozBrowserOpenWindow);
       tabIframe.on('mozbrowserlocationchange', this.saveSession);
 
-      // tabIframe already added to _tabIframeArray. Hence the -1
-      let tabPosition = _tabIframeArray.length - 1;
-      if (options.tabPosition) {
-        tabPosition = options.tabPosition;
-      }
       this.emit('add', {tabIframe: tabIframe, tabPosition: tabPosition});
 
       if (options.url) {
@@ -170,7 +171,11 @@ define(['js/tabiframe', 'js/eventemitter', 'js/keybindings'],
     getCount: function() {
       return _tabIframeArray.length;
     },
-  }
+
+    getTabPosition: function(tabIframe) {
+      return _tabIframeArray.indexOf(tabIframe);
+    },
+}
 
   TabIframeDeck[Symbol.iterator] = function*() {
     for (let tabIframe of _tabIframeArray) {
