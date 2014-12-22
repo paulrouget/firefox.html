@@ -96,7 +96,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     this._tabIframe.position = tabPosition;
 
     // If position is 0, append to end. Else, insert at position
-    if(tabPosition === 0) {
+    if (tabPosition === 0) {
       tabstrip.appendChild(this._dom);
     } else {
       tabstrip.insertBefore(this._dom, tabstrip.children[tabPosition]);

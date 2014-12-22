@@ -176,7 +176,7 @@ define(['js/eventemitter'], function(EventEmitter) {
   });
 
   Object.defineProperty(tabIframeProto, 'position', {
-    get: function () {
+    get: function() {
       return this._position;
     },
     set: function(newPosition) {
