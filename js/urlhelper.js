@@ -8,7 +8,7 @@
 
 define(function() {
 
-  "use strict";
+  'use strict';
 
   var rscheme = /^(?:[a-z\u00a1-\uffff0-9-+]+)(?::|:\/\/)/i;
 
@@ -39,7 +39,7 @@ define(function() {
       // need extra validation. We'll remove it til bug fixed
       // for native form validation.
       //
-      // for cases, ?abc and "a? b" which should searching query
+      // for cases, ?abc and 'a? b' which should searching query
       var case1Reg = /^(\?)|(\?.+\s)/;
       // for cases, pure string
       var case2Reg = /[\?\.\s\:]/;
@@ -64,8 +64,20 @@ define(function() {
       }
       this.urlValidate.setAttribute('value', str);
       return !this.urlValidate.validity.valid;
+    },
+
+    trim: function(input) {
+      // remove single trailing slash for http/https/ftp URLs
+      let url = input.replace(/^((?:http|https|ftp):\/\/[^/]+)\/$/, '$1');
+
+      // remove http://
+      if (!url.startsWith('http://')) {
+        return url;
+      }
+
+      return url.substring(7);
     }
   };
 
-return UrlHelper;
+  return UrlHelper;
 });

@@ -15,20 +15,20 @@
 
 require(['js/tabiframedeck'], function(TabIframeDeck) {
 
-  "use strict";
+  'use strict';
 
-  let link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = "css/tabstrip.css";
-  let defaultStyleSheet = document.querySelector("link[title=default]");
+  let link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'css/tabstrip.css';
+  let defaultStyleSheet = document.querySelector('link[title=default]');
   document.head.insertBefore(link, defaultStyleSheet.nextSibling);
 
   // Build the container. A hbox on top of the deck.
-  // <hbox class="tabstrip"></hbox>
+  // <hbox class='tabstrip'></hbox>
   // Tabs will be appended in there.
-  let tabstrip = document.createElement("hbox");
-  tabstrip.className = "tabstrip toolbar";
-  let outervbox = document.querySelector("#outervbox");
+  let tabstrip = document.createElement('hbox');
+  tabstrip.className = 'tabstrip toolbar';
+  let outervbox = document.querySelector('#outervbox');
   outervbox.insertBefore(tabstrip, outervbox.firstChild);
 
   // Where will store the tab objects, with their linked
@@ -38,40 +38,41 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // Tab JS object. This should use web components.
   // issue #64
   function Tab(tabIframe) {
-    let hbox = document.createElement("hbox");
-    hbox.className = "tab";
-    hbox.setAttribute("align", "center");
+    let hbox = document.createElement('hbox');
+    hbox.className = 'tab';
+    hbox.setAttribute('align', 'center');
 
     // This attribute controls whether the tabs animate or not
-    hbox.setAttribute("animate", "true");
+    hbox.setAttribute('animate','true');
 
-    let throbber = document.createElement("div");
-    throbber.className = "throbber";
+    let throbber = document.createElement('div');
+    throbber.className = 'throbber';
 
-    let favicon = document.createElement("img");
-    favicon.className = "favicon";
+    let favicon = document.createElement('img');
+    favicon.className = 'favicon';
 
-    let title = document.createElement("hbox");
-    title.className = "title";
+    let title = document.createElement('hbox');
+    title.className = 'title';
 
-    let button = document.createElement("button");
-    button.className = "close-button";
+    let button = document.createElement('button');
+    button.className = 'close-button';
+    button.title = 'Close Tab';
 
     button.onmouseup = (event) => {
-      if(event.button == 0) {
+      if (event.button == 0) {
         event.stopPropagation();
         TabIframeDeck.remove(tabIframe);
       }
     };
 
     hbox.onmousedown = (event) => {
-      if(event.button == 0) {
+      if (event.button == 0) {
         TabIframeDeck.select(tabIframe);
       }
     };
 
     hbox.onmouseup = (event) => {
-      if(event.button == 1) {
+      if (event.button == 1) {
         event.stopPropagation();
         TabIframeDeck.remove(tabIframe);
       }
@@ -103,58 +104,72 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     },
 
     destroy: function() {
-      this.dom.setAttribute("closing", "true");
+      this.dom.setAttribute('closing', 'true');
       this._untrackTabIframe();
       this._tabIframe = null;
-      setTimeout(() => {
+      this.dom.addEventListener('animationend', () => {
         this.dom.remove();
       }, 200);
     },
 
     select: function() {
-      this.dom.classList.add("selected");
+      this.dom.classList.add('selected');
     },
 
     unselect: function() {
-      this.dom.classList.remove("selected");
+      this.dom.classList.remove('selected');
     },
+
+    _eventsToTrack: [
+      'mozbrowserloadstart',
+      'mozbrowserloadend',
+      'mozbrowsertitlechange',
+      'mozbrowserlocationchange',
+      'mozbrowsericonchange',
+      'mozbrowsererror'
+    ],
 
     _trackTabIframe: function() {
       this.updateDom = this.updateDom.bind(this);
-      this.tabIframe.on("dataUpdate", this.updateDom);
+      for (let e of this._eventsToTrack) {
+        this.tabIframe.on(e, this.updateDom);
+      }
     },
 
     _untrackTabIframe: function() {
-      this.tabIframe.off("dataUpdate", this.updateDom);
+      for (let e of this._eventsToTrack) {
+        this.tabIframe.off(e, this.updateDom);
+      }
     },
 
     updateDom: function() {
       if (this.tabIframe.loading) {
-        this.dom.classList.add("loading");
+        this.dom.classList.add('loading');
       } else {
-        this.dom.classList.remove("loading");
+        this.dom.classList.remove('loading');
       }
 
-      if (this.tabIframe.title) {
-        this.dom.querySelector(".title").textContent = this.tabIframe.title;
-      } else {
+      let title = this.tabIframe.title;
+      if (!title) {
         if (this.tabIframe.location) {
-          this.dom.querySelector(".title").textContent = this.tabIframe.location;
+          title = this.tabIframe.location;
         } else {
-          this.dom.querySelector(".title").textContent = "New Tab";
+          title = 'New Tab';
         }
       }
+      this.dom.querySelector('.title').textContent = title;
+      this.dom.title = title;
 
-      let faviconImg = this.dom.querySelector(".favicon");
+      let faviconImg = this.dom.querySelector('.favicon');
       if (this.tabIframe.favicon) {
         faviconImg.src = this.tabIframe.favicon;
       } else {
-        faviconImg.removeAttribute("src");
+        faviconImg.removeAttribute('src');
       }
     },
   };
 
-  TabIframeDeck.on("add", (event, detail) => {
+  TabIframeDeck.on('add', (event, detail) => {
     let tabIframe = detail.tabIframe;
     let tab = new Tab(tabIframe);
     allTabs.set(tabIframe, tab);
@@ -163,7 +178,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     }
   });
 
-  TabIframeDeck.on("remove", (event, detail) => {
+  TabIframeDeck.on('remove', (event, detail) => {
     let tab = allTabs.get(detail.tabIframe);
     if (tab) {
       tab.destroy();
@@ -171,14 +186,14 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     }
   });
 
-  TabIframeDeck.on("select", (event, detail) => {
+  TabIframeDeck.on('select', (event, detail) => {
     let tab = allTabs.get(detail.tabIframe);
     if (tab) {
       tab.select();
     }
   });
 
-  TabIframeDeck.on("unselect", (event, detail) => {
+  TabIframeDeck.on('unselect', (event, detail) => {
     let tab = allTabs.get(detail.tabIframe);
     if (tab) {
       tab.unselect();
@@ -198,37 +213,37 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
 
   /* Build curved tabs */
 
-  link.addEventListener("load", onDocumentLoaded);
+  link.addEventListener('load', onDocumentLoaded);
 
   function onDocumentLoaded() {
-    link.removeEventListener("load", onDocumentLoaded);
+    link.removeEventListener('load', onDocumentLoaded);
     BuildCurvedTabs();
   }
 
   function BuildCurvedTabs() {
-    let curveDummyElt = document.querySelector(".dummy-tab-curve");
+    let curveDummyElt = document.querySelector('.dummy-tab-curve');
     let style = window.getComputedStyle(curveDummyElt);
 
-    let curveBorder = style.getPropertyValue("--curve-border");
-    let curveGradientStart = style.getPropertyValue("--curve-gradient-start");
-    let curveGradientEnd = style.getPropertyValue("--curve-gradient-end");
-    let curveHoverBorder = style.getPropertyValue("--curve-hover-border");
-    let curveHoverGradientStart = style.getPropertyValue("--curve-hover-gradient-start");
-    let curveHoverGradientEnd = style.getPropertyValue("--curve-hover-gradient-end");
+    let curveBorder = style.getPropertyValue('--curve-border');
+    let curveGradientStart = style.getPropertyValue('--curve-gradient-start');
+    let curveGradientEnd = style.getPropertyValue('--curve-gradient-end');
+    let curveHoverBorder = style.getPropertyValue('--curve-hover-border');
+    let curveHoverGradientStart = style.getPropertyValue('--curve-hover-gradient-start');
+    let curveHoverGradientEnd = style.getPropertyValue('--curve-hover-gradient-end');
 
-    let c1 = document.createElement("canvas");
-        c1.id = "canvas-tab-selected";
-        c1.hidden = true;
-        c1.width = 3 * 28;
-        c1.height = 28;
+    let c1 = document.createElement('canvas');
+    c1.id = 'canvas-tab-selected';
+    c1.hidden = true;
+    c1.width = 3 * 28;
+    c1.height = 28;
     drawBackgroundTab(c1, curveGradientStart, curveGradientEnd, curveBorder);
     document.body.appendChild(c1);
 
-    let c2 = document.createElement("canvas");
-        c2.id = "canvas-tab-hover";
-        c2.hidden = true;
-        c2.width = 3 * 28;
-        c2.height = 28;
+    let c2 = document.createElement('canvas');
+    c2.id = 'canvas-tab-hover';
+    c2.hidden = true;
+    c2.width = 3 * 28;
+    c2.height = 28;
     drawBackgroundTab(c2, curveHoverGradientStart, curveHoverGradientEnd, curveHoverBorder);
     document.body.appendChild(c2);
 
@@ -236,32 +251,32 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     function drawBackgroundTab(canvas, bg1, bg2, borderColor) {
       canvas.width = window.devicePixelRatio * canvas.width;
       canvas.height = window.devicePixelRatio * canvas.height;
-      let ctx = canvas.getContext("2d");
+      let ctx = canvas.getContext('2d');
       let r = canvas.height;
       ctx.save();
       ctx.beginPath();
-      drawCurve(ctx,r);
+      drawCurve(ctx, r);
       ctx.lineTo(3 * r, r);
       ctx.lineTo(0, r);
       ctx.closePath();
       ctx.clip();
 
       // draw background
-      let lingrad = ctx.createLinearGradient(0,0,0,r);
+      let lingrad = ctx.createLinearGradient(0, 0, 0, r);
       lingrad.addColorStop(0, bg1);
       lingrad.addColorStop(1, bg2);
       ctx.fillStyle = lingrad;
-      ctx.fillRect(0,0,3*r,r);
+      ctx.fillRect(0, 0, 3 * r, r);
 
       // draw border
       ctx.restore();
       ctx.beginPath();
-      drawCurve(ctx,r);
+      drawCurve(ctx, r);
       ctx.strokeStyle = borderColor;
       ctx.stroke();
     }
 
-    function drawCurve(ctx,r) {
+    function drawCurve(ctx, r) {
       let firstLine = 1 / window.devicePixelRatio;
       ctx.moveTo(r * 0, r * 0.984);
       ctx.bezierCurveTo(r * 0.27082458, r * 0.95840561,
