@@ -40,6 +40,8 @@ To run tests manually you need to install our dependencies _once_ after cloning 
 npm install
 ```
 
+You probably already did this if you followed the `README.md` instructions.
+
 After installing the dependencies you can trigger the tests with the following command:
 
 ```bash
