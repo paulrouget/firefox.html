@@ -43,7 +43,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     hbox.setAttribute('align', 'center');
 
     // This attribute controls whether the tabs animate or not
-    hbox.setAttribute('animate','true');
+    hbox.setAttribute('animate', 'true');
 
     let throbber = document.createElement('div');
     throbber.className = 'throbber';
