@@ -9,22 +9,6 @@
  *
  */
 
-// Detect Operating System
-
-if (navigator.appVersion.indexOf('Win') >= 0) {
-  window.OS = 'windows';
-  document.body.setAttribute('os', 'windows');
-}
-if (navigator.appVersion.indexOf('Mac') >= 0) {
-  window.OS = 'osx';
-  document.body.setAttribute('os', 'osx');
-}
-if (navigator.appVersion.indexOf('X11') >= 0) {
-  window.OS = 'linux';
-  document.body.setAttribute('os', 'linux');
-}
-
-
 require.config({
   scriptType: 'text/javascript;version=1.8',
   paths: {
@@ -37,10 +21,19 @@ require.config({
   }
 });
 
+//document.addEventListener("focus", (event) => document.querySelector("#outervbox").focus())
+//document.addEventListener("blur", (event) => document.body.firstElementChild.blur())
+
+window.OS = navigator.appVersion.contains('Win') ? "windows" :
+            navigator.appVersion.contains("Mac") ? "osx" :
+            navigator.appVersion.contains("X11") ? "linux" :
+            "unknown";
 require(['react', 'js/browser'], (React, Browser) => {
   // IS_PRIVILEGED is false if Firefox.html runs in a regular browser,
   // with no Browser API.
-  React.render(React.createElement(Browser, {
-    isPrivileged: !!HTMLIFrameElement.prototype.setVisible
+  React.render(Browser({
+    isPrivileged: !!HTMLIFrameElement.prototype.setVisible,
+    // Detect Operating System
+    OS: window.OS
   }), document.body);
 });
