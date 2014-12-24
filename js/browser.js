@@ -1,19 +1,28 @@
 define((require, exports, module) => {
   "use strict";
 
-  const React = require("react")
-  const {DOM} = React
+  const {Component, React} = require("js/component")
+  const {html} = require("js/virtual-dom")
   const {FrameDeck} = require("js/frame-deck")
   const {TabNavigator} = require("js/tab-navigator")
   const {NavigationPanel} = require("js/navigation-panel")
-  const {readKeyBinding} = require("js/key-bindings")
+  const {Keyboard} = require("js/keyboard")
 
+  const focusInput = input =>
+    Object.assign({}, input, {focused: true})
+  const blurInput = input =>
+    Object.assign({}, input, {focused: false})
 
   const SelectFrame = frame =>
-    Object.assign({}, frame, {selected: true})
+    Object.assign({}, frame, {selected: true,
+                              focused: true})
 
   const DeselectFrame = frame =>
-    Object.assign({}, frame, {selected: false})
+    Object.assign({}, frame, {selected: false,
+                              focused: false})
+
+  const selectedFrame = frames =>
+    frames.find(({selected}) => selected)
 
   const selectFrame = (frames, id) =>
     frames.map(frame =>
@@ -24,100 +33,137 @@ define((require, exports, module) => {
   const makeFrame = (id, state) =>
     Object.assign({}, state, {id})
 
-  const Browser = React.createClass({
-    getInitialState() {
-      return {
+  const Browser = Component({
+    displayName: "Browser",
+    mixins: [Keyboard],
+    defaults() {
+      return Object.assign({
+        version: "0.0.1",
         isPrivileged: true,
         frameID: 0,
         frames: [{id: 0, selected: true}],
-        input: {focused: false},
+        input: {focused: true},
         search: {focused: false, query: ""},
-        keyBinding: {},
-      }
+      }, Keyboard.keyboardDefaults())
     },
     selectFrame({id}) {
-      const {frames} = this.state
-      this.setState({frames: selectFrame(frames, id)})
+      const {frames} = this.props
+      this.patch({frames: selectFrame(frames, id)})
     },
     addFrame(options) {
-      const {state} = this
-      const frameID = state.frameID + 1
-      const frames = [...state.frames]
+      const {props} = this
+      const frameID = props.frameID + 1
+      const frames = [...props.frames]
       const selected = frames.find(({selected}) => selected)
       const frame = makeFrame(frameID, options)
       frames.splice(frames.indexOf(selected), 1,
                     frame.selected ? DeselectFrame(selected) : selected,
                     frame)
 
-      this.setState({frameID, frames})
+      this.patch({frameID, frames,
+                  input: focusInput(props.input)})
     },
     removeFrame({id}) {
-      const {state} = this
-      const frames = [...state.frames]
-      const index = frames.findIndex(frame => frame.id == id)
-      frames.splice(index, 1)
-      const selected = frames[index] || frames[frames.length - 1]
-      this.setState({frames: selectFrame(frames, selected.id)})
+      const {props} = this
+      const frames = [...props.frames]
+      // Abort if only one frame left.
+      if (frames.length > 1) {
+        const index = frames.findIndex(frame => frame.id == id)
+        frames.splice(index, 1)
+        const selected = frames[index] || frames[frames.length - 1]
+        this.patch({frames: selectFrame(frames, selected.id)})
+      }
     },
     resetFrame(state) {
-      const {frames} = this.state
+      const {frames} = this.props
       const swapFrame = frame =>
         frame.id === state.id ? state : frame
 
-      this.setState({frames: frames.map(swapFrame)})
+      this.patch({frames: frames.map(swapFrame)})
     },
 
     resetInput(state) {
-      this.setState({input: state})
+      this.patch({input: state})
     },
     resetSearch(state) {
-      this.setState({search: state})
+      this.patch({search: state})
     },
 
-    onKey(event) {
-      this.setState({keyBinding: {
-        timeStamp: event.timeStamp,
-        binding: readKeyBinding(event)
-      }});
+    clearSession() {
+      localStorage.removeItem("session")
     },
-    render() {
-       const {frames, input, search, keyBinding} = this.state
-       console.log(this.state)
-       const {isPrivileged} = this.props
+    saveSession() {
+      localStorage.setItem("session", JSON.stringify(this.props))
+    },
+    restoreSession() {
+      const data = localStorage.getItem("session")
+      const session = data && JSON.parse(data)
+      if (session && session.version === this.props.version) {
+        this.reset(session)
+      }
+      else {
+        const backup = `session@${session.version}`
+        localStorage.setItem(backup, data)
+        console.error(`Stored session ${session.version} version is incompatible with current ${this.props.version} version.
+Backing up stored session to ${backup} & resuming with blank session instead.`)
+      }
+    },
+
+    mounted(target, options) {
+      target.ownerDocument.body.setAttribute("os", options.OS);
+      this.restoreSession()
+    },
+    write(_, state) {
+      if (this.isReady) {
+        console.log(">>>>>>", state)
+        this.saveSession()
+      }
+    },
+    render(options) {
+       const {frames, input, search, keysPressed, isPrivileged} = options
+       console.log(options)
        const frame = frames.find(frame => frame.selected);
-
-        return DOM.div({className: "vbox flex-1",
-                        id: "outervbox",
-                        onKeyDown: this.onKey}, [
-          React.createElement(TabNavigator, {
+       return html.div({id: "outervbox",
+                        className: "vbox flex-1",
+                        onBlur: this.onBlur,
+                        onKeyDown: this.onKeyDown,
+                        onKeyUp: this.onKeyUp}, [
+          TabNavigator({
+            key: "tab-navigator",
             frames,
             addTab: this.addFrame,
             closeTab: this.removeFrame,
             selectTab: this.selectFrame
           }),
 
-          React.createElement(NavigationPanel, {
-            frame, input, search, keyBinding,
+          NavigationPanel({
+            key: "navigation-panel",
+            frame, input, search, keysPressed,
             resetFrame: this.resetFrame,
             resetInput: this.resetInput,
-            resetSearch: this.resetSearch
+            resetSearch: this.resetSearch,
           }),
 
-          DOM.div({className: "hbox flex-1",
-                   id: "outerhbox"}, [
+          html.div({className: "hbox flex-1",
+                    key: "frame-deck",
+                    id: "outerhbox"}, [
 
-            React.createElement(FrameDeck, {
+            FrameDeck({
+              key: "deck",
               selected: frame,
-              frames, keyBinding,
+              frames, keysPressed,
               isPrivileged,
               addFrame: this.addFrame,
               removeFrame: this.removeFrame,
               resetFrame: this.resetFrame,
-              selectFrame: this.selectFrame
+              selectFrame: this.selectFrame,
+              clearSession: this.clearSession,
+              saveSession: this.saveSession
             })
           ]),
-          DOM.div({hidden: "true",
-                   className: "dummy-tab-curve"})
+          html.div({key: "tab-curve",
+                    hidden: "true",
+                    className: "dummy-tab-curve"})
         ])
     }
   })

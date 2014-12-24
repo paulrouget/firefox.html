@@ -1,13 +1,14 @@
 define((require, exports, module) => {
   "use strict";
 
-  const React = require("react")
-  const DOM  = React.DOM
+  const {Component} = require("js/component")
+  const {html}  = require("js/virtual-dom")
   const {Frame} = require("js/frame")
-  const {KeyBindings} = require("js/key-bindings")
+  const {KeyBindings} = require("js/keyboard")
 
-  const FrameDeck = React.createClass({
-    onKeyBinding: KeyBindings({
+  const FrameDeck = Component({
+    displayName: "FrameDeck",
+    mixins: [KeyBindings.make("keysPressed", {
       "alt left": "goBack",
       "alt right": "goForward",
       "esc": "stop",
@@ -17,20 +18,17 @@ define((require, exports, module) => {
       "@meta w": "close",
       "ctrl tab": "selectNext",
       "ctrl shift tab": "selectPrevious",
+      "meta shift ]": "selectNext",
+      "meta shift [": "selectPrevious",
 
       "@meta shift +": "zoomIn",
       "@meta =": "zoomIn",
       "@meta -": "zoomOut",
-      "@meta 0": "resetZoom"
-    }),
-    componentWillReceiveProps({keyBinding}) {
-      const current = this.props
-      if (keyBinding.timeStamp != current.keyBinding.timeStamp) {
-        this.onKeyBinding(keyBinding.binding)
-      }
-    },
+      "@meta 0": "resetZoom",
 
-
+      "@meta shift backspace": "clearSession",
+      "@meta shift s": "saveSession"
+    })],
     zoomIn() {
       this.props.resetFrame(Frame.zoomIn(this.props.selected))
     },
@@ -75,18 +73,25 @@ define((require, exports, module) => {
     reset(frame) {
       this.props.resetFrame(frame)
     },
+    clearSession() {
+      this.props.clearSession()
+    },
+    saveSession() {
+      this.props.saveSession()
+    },
 
     renderFrame(frame) {
       const {open, close, reset} = this
       const {isPrivileged} = this.props
       const options = Object.assign({}, frame, {
-        open, close, reset, isPrivileged
+        open, close, reset, isPrivileged, key: `frame-${frame.id}`
       })
-      return React.createElement(Frame, options)
+      return Frame(options)
     },
-    render() {
-      return DOM.div({className: "frame-deck iframes box flex-1 align stretch"},
-                     this.props.frames.map(this.renderFrame))
+    render({frames}) {
+      return html.div({className: "frame-deck iframes box flex-1 align stretch",
+                       key: "frame-deck"},
+                       frames.map(this.renderFrame))
     }
   })
 

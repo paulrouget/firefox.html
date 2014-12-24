@@ -1,10 +1,10 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {KeyBindings} = require("js/key-bindings")
-  const React = require("react")
+  const {KeyBindings} = require("js/keyboard")
+  const {Component} = require("js/component")
+  const {html} = require("js/virtual-dom")
   const urlHelper = require("js/urlhelper")
-  const DOM  = React.DOM
 
   const makeSearchURL = input =>
     `https://search.yahoo.com/search?p=${encodeURIComponent(input)}`
@@ -17,46 +17,37 @@ define((require, exports, module) => {
 
   exports.readInputURL = readInputURL
 
-  const NavigationPanel = React.createClass({
-    onKeyBinding: KeyBindings({
-      "@meta l": "onInputFocus",
-      "@meta k": "onSearchFocus"
-    }),
-    componentWillReceiveProps({keyBinding}) {
-      const current = this.props
-      if (keyBinding.timeStamp != current.keyBinding.timeStamp) {
-        this.onKeyBinding(keyBinding.binding)
-      }
-    },
-    componentWillMount() {
+  const NavigationPanel = Component({
+    displayName: "NavigationPanel",
+    mixins: [KeyBindings.make("keysPressed",
+                              {"@meta l": "focusInput",
+                               "@meta k": "focusSearch"})],
+    injectStyles({ownerDocument: document}) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = "css/navbar.css";
       link.id = "navigator-panel-style";
 
-      const defaultStyleSheet = document.querySelector('link[title=default]');
+      const defaultStyleSheet = document.querySelector('link#default');
       document.head.insertBefore(link, defaultStyleSheet.nextSibling);
 
       link.addEventListener("load", this.onStyleReady)
     },
-    shouldComponentUpdate({input, frame, search}) {
-      const current = this.props
-      return input !== current.input ||
-             search !== current.search ||
-             frame !== current.frame
+    equal(before, after) {
+      return before.input == after.input &&
+             before.search == after.search &&
+             before.frame == after.frame
     },
 
     patch({input, frame, search}) {
       if (input) {
-        this.props.resetInput(Object.assign({},
-                                            this.props.input,
-                                            input))
+        this.props.resetInput(Object.assign({}, this.props.input, input))
       }
 
       if (search) {
         this.props.resetSearch(Object.assign({},
-                                            this.props.search,
-                                            search))
+                                             this.props.search,
+                                             search))
       }
 
       if (frame) {
@@ -86,9 +77,21 @@ define((require, exports, module) => {
       this.patch({frame: {url}})
     },
     navigateTo(input) {
-      this.patch({frame: {input: null,
-                          url: readInputURL(input)}})
+      if (input) {
+        this.patch({frame: {input: null,
+                            focused: true,
+                            url: readInputURL(input)}})
+      }
     },
+    focusInput() {
+      this.patch({input: {focused: true},
+                  frame: {focused: false}});
+    },
+    focusSearch() {
+      this.patch({search: {focused: true},
+                  frame: {focused: false}});
+    },
+
 
     onInputChange(event) {
       this.patch({frame: {input: event.target.value}})
@@ -124,25 +127,24 @@ define((require, exports, module) => {
     // Focus and selection management can not be expressed declaratively
     // at least not with reacts virtual dom. There for focus management
     // and selection management is handled manually post update.
-    componentDidUpdate(past) {
-      const view = this.getDOMNode()
-      const current = this.props
-
-      if (current.input.focused && !past.input.focused) {
-        const node = view.querySelector(".urlinput")
+    write(target, after, before) {
+      if (after.input.focused && !before.input.focused) {
+        const node = target.querySelector(".urlinput")
         node.focus()
         node.select()
       }
 
-      if (current.search.focused && !past.search.focused) {
-        const node = view.querySelector(".searchinput")
+      if (after.search.focused && !before.search.focused) {
+        const node = target.querySelector(".searchinput")
         node.focus()
         node.select()
       }
     },
-    render() {
-      const { frame, input, search } = this.props
-
+    mounted(target) {
+      this.injectStyles(target)
+      this.componentDidUpdate({input: {}, search: {}})
+    },
+    render({frame, input, search}) {
       const classList = [
         "navbar", "toolbar", "hbox", "align", "center",
         frame && frame.loading ? "loading" : "loaded",
@@ -150,62 +152,67 @@ define((require, exports, module) => {
         frame && frame.securityExtendedValidation ? "sslev" : ""
       ]
 
-      return DOM.div({
+      return html.div({
         className: classList.join(" ")
       }, [
-        DOM.button({
+        html.button({
+          key: "back-button",
           className: ["back-button",
                       frame && frame.canGoBack ? "" : "disabled"].join(" "),
-          key: "back-button",
           onClick: this.navigateBack
         }),
-        DOM.button({
+        html.button({
+          key: "forward-button",
           className: ["forward-button",
                       frame && frame.canGoForward ? "" : "disabled"].join(" "),
-          key: "forward-button",
           onClick: this.navigateForward
         }),
-        DOM.button({
-          className: "reload-button",
+        html.button({
           key: "reload-button",
+          className: "reload-button",
           onClick: this.reload
         }),
-        DOM.button({
-          className: "stop-button",
+        html.button({
           key: "stop-button",
+          className: "stop-button",
           onClick: this.stop
         }),
-        DOM.div({
+        html.div({
+          key: "url-bar",
           className: "urlbar hbox flex-1 align center" +
-                     (input.focused ? " focus" : ""),
-          key: "url-bar"
+                     (input.focused ? " focus" : "")
         }, [
-          DOM.div({className: "identity"}),
-          DOM.input({className: "urlinput flex-1",
-                     value: frame && (frame.input || frame.url),
-                     placeholder: "Search or enter address",
+          html.div({key: "identity",
+                    className: "identity"}),
+          html.input({key: "url-input",
+                      className: "urlinput flex-1",
+                      value: frame && (frame.input !== null ? frame.input : frame.url),
+                      placeholder: "Search or enter address",
 
-                     onChange: this.onInputChange,
-                     onKeyDown: this.onInputKey,
-                     onFocus: this.onInputFocus,
-                     onBlur: this.onInputBlur})
+                      onChange: this.onInputChange,
+                      onKeyDown: this.onInputKey,
+                      onFocus: this.onInputFocus,
+                      onBlur: this.onInputBlur})
         ]),
-        DOM.div({
+        html.div({
+          key: "search-bar",
           className: "searchbar hbox flex-1 align center" +
-                     (search.focused ? " focus" : ""),
-          key: "search-bar"
+                     (search.focused ? " focus" : "")
         }, [
-          DOM.div({className: "searchselector"}),
-          DOM.input({className: "searchinput",
-                     value: search.query,
-                     placeholder: "Yahoo",
+          html.div({key: "search-selector",
+                    className: "searchselector"}),
+          html.input({key: "search-input",
+                      className: "searchinput",
+                      value: search.query,
+                      placeholder: "Yahoo",
 
-                     onChange: this.onSearchChange,
-                     onKeyDown: this.onSearchKey,
-                     onFocus: this.onSearchFocus,
-                     onBlur: this.onSearchBlur})
+                      onChange: this.onSearchChange,
+                      onKeyDown: this.onSearchKey,
+                      onFocus: this.onSearchFocus,
+                      onBlur: this.onSearchBlur})
         ]),
-        DOM.button({className: "menu-button"})
+        html.button({key: "menu-button",
+                     className: "menu-button"})
       ])
     }
   })
