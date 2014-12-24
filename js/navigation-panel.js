@@ -28,7 +28,7 @@ define((require, exports, module) => {
       link.href = "css/navbar.css";
       link.id = "navigator-panel-style";
 
-      const defaultStyleSheet = document.querySelector('link#default');
+      const defaultStyleSheet = document.querySelector("link[title=default]");
       document.head.insertBefore(link, defaultStyleSheet.nextSibling);
 
       link.addEventListener("load", this.onStyleReady)
