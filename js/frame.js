@@ -1,36 +1,35 @@
 define((require, exports, module) => {
   "use strict";
 
-  const React = require("react")
-  const DOM  = React.DOM
+  const {Component} = require("js/component")
+  const {html} = require("js/virtual-dom")
 
-  const buildDefaults = () => ({
-    zoom: 1,
-    loading: false,
-    input: null,
-    url: "",
-    favicon: null,
-    securityState: "unsecure",
-    securityExtendedValidation: false,
-    canGoBack: false,
-    canGoForward: false
-  })
 
-  const Frame = React.createClass({
-    getDefaults() {
-      return
+  const Frame = Component({
+    displayName: "Frame",
+    defaults() {
+      return {
+        zoom: 1,
+        loading: false,
+        focused: false,
+        input: null,
+        url: null,
+        title: null,
+        favicon: null,
+        securityState: "unsecure",
+        securityExtendedValidation: false,
+        canGoBack: false,
+        canGoForward: false
+      }
     },
-    getDefaultProps() {
-      return buildDefaults()
-    },
-    componentDidMount() {
-      const container = this.getDOMNode();
-      var frame = document.createElement("iframe")
-      frame.className = "flex-1"
+    mounted(target, options) {
+      //const frame = target.ownerDocument.createElement("iframe")
+      const frame = target.firstElementChild;
+      //frame.className = "flex-1"
       frame.setAttribute("remote", true)
       frame.setAttribute("mozbrowser", true);
-      frame.setAttribute("mozallowfullscreen", "true");
-
+      frame.setAttribute("mozallowfullscreen", true);
+      frame.setAttribute("hidden", true);
 
       frame.addEventListener("mozbrowserasyncscroll", this.onScroll);
       frame.addEventListener("mozbrowserclose", this.onClose);
@@ -46,12 +45,15 @@ define((require, exports, module) => {
       frame.addEventListener("mozbrowsershowmodalprompt", this.onPrompt);
       frame.addEventListener("mozbrowsertitlechange", this.onTitleChange);
       frame.addEventListener("mozbrowserusernameandpasswordrequired", this.onAuthentificate);
+      //frame.addEventListener("focus", this.onFocus);
+      //frame.addEventListener("blur", this.onBlur);
 
-      container.appendChild(frame);
+      frame.parentNode.replaceChild(frame, frame)
+      //target.appendChild(frame);
+      this.patchAttributes(frame, options);
     },
     patch(diff) {
-      const state = Object.assign({}, this.props, diff)
-      this.props.reset(state)
+      this.props.reset(Object.assign({}, this.props, diff))
     },
 
     onScroll() {
@@ -70,20 +72,24 @@ define((require, exports, module) => {
     },
     onConextMenu() {
     },
-    onError() {
+    onError(event) {
+      console.error(event)
       this.patch({loading: false});
     },
     onSecurityChange() {
     },
     onPrompt() {
     },
-    onLoadStart() {
-      const delta = Object.assign(buildDefaults(),
-                                  {loading: true,
-                                   url: this.props.url})
-      this.patch(delta)
+    onLoadStart(event) {
+      this.patch({loading: true,
+                  favicon: null,
+                  title: null,
+                  securityState: "unsecure",
+                  securityExtendedValidation: false,
+                  canGoBack: false,
+                  canGoForward: false})
     },
-    onLoadEnd() {
+    onLoadEnd(event) {
       this.patch({loading: false})
     },
     onTitleChange({detail}) {
@@ -102,55 +108,73 @@ define((require, exports, module) => {
     onCanGoForward({target: {result}}) {
       this.patch({canGoForward: result})
     },
+    onFocus() {
+      this.patch({focused: true})
+    },
+    onBlur() {
+      this.patch({focused: false})
+    },
 
-    componentDidUpdate(past) {
-      const state = this.props
-      const node = this.getDOMNode().firstElementChild
-
-      if (state.url != past.url) {
-        node.src = state.isPrivileged ? state.url :
-                   `data:,${state.url}`;
-      }
-
-      if (state.selected !== past.selected) {
-        if (state.selected) {
+    patchAttributes(node, after, before={}) {
+      if (after.selected !== before.selected) {
+        if (after.selected) {
           node.removeAttribute("hidden")
-          node.focus()
         } else {
           node.setAttribute("hidden", "true")
         }
       }
 
-      if (state.zoom !== past.zoom) {
-        node.zoom(state.zoom)
+      if (after.url && after.url != before.url) {
+        node.src = after.isPrivileged ? after.url :
+        `data:,${after.url}`;
       }
 
-      if (state.loading !== past.loading) {
+      if (after.zoom !== before.zoom) {
+        node.zoom(after.zoom)
+      }
+
+      if (after.loading !== before.loading) {
         node.getCanGoBack().onsuccess = this.onCanGoBack
         node.getCanGoForward().onsuccess = this.onCanGoForward
       }
 
-      if (state.action) {
-        if (state.action === "reload") {
+      if (after.action) {
+        if (after.action === "reload") {
           node.reload()
         }
-        if (state.action === "goBack") {
+        if (after.action === "goBack") {
           node.goBack()
         }
-        if (state.action === "goForward") {
+        if (after.action === "goForward") {
           node.goForward()
         }
-        if (state.action === "stop") {
+        if (after.action === "stop") {
           node.stop()
         }
 
         this.patch({action: null})
       }
+
+      if (after.focused && !before.focused) {
+        node.focus()
+      }
+    },
+    write(target, after, before) {
+      this.patchAttributes(target.firstElementChild, after, before)
     },
 
-    render() {
-      return DOM.div({className: "frame box flex-1",
-                      hidden: !this.props.selected})
+    render({selected, id}) {
+      return html.div({className: "frame box flex-1",
+                       key: id,
+                       hidden: !selected}, [
+        html.iframe({
+          key: `frame-${id}`,
+          hidden: !selected,
+          className: "flex-1",
+          onBlur: this.onBlur,
+          onFocus: this.onFocus,
+        })
+      ])
     }
   })
 
