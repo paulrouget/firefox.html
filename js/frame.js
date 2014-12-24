@@ -164,9 +164,11 @@ define((require, exports, module) => {
       }
     },
     render({id, url, selected, zoom, focused}) {
+      if (!url) return null;
       return IFrame({className: "frame box flex-1",
                      key: `frame-${id}`,
                      hidden: !selected,
+                     disabled: !url,
                      remote: true,
                      browser: true,
                      allowFullScreen: true,
