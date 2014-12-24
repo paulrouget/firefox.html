@@ -3,7 +3,56 @@ define((require, exports, module) => {
 
   const {Component} = require("js/component")
   const {html} = require("js/virtual-dom")
+  const {Element, Attribute, Event} = require("js/element")
 
+  const IFrame = Element("iframe", {
+    options: {
+      remote: Attribute("remote"),
+      browser: Attribute("mozbrowser"),
+      allowFullScreen: Attribute("mozallowfullscreen"),
+      flex: Attribute("flex")
+    },
+    attributes: {
+      hidden(node, current, past) {
+        if (current) {
+          node.setAttribute("hidden", true)
+          node.setVisible(false)
+        } else if (past) {
+          node.removeAttribute("hidden")
+          node.setVisible(true)
+        }
+      },
+      zoom(node, current, past) {
+        if (current != past) {
+          node.zoom(current)
+        }
+      },
+      focused: function(node, value) {
+        if (value) {
+         node.focus()
+        } else {
+         node.blur()
+        }
+      }
+    },
+    events: {
+      onAsyncScroll: Event("mozbrowserasyncscroll"),
+      onClose: Event("mozbrowserclose"),
+      onOpenWindow: Event("mozbrowseropenwindow"),
+      onContextMenu: Event("mozbrowsercontextmenu"),
+      onError: Event("mozbrowsererror"),
+      onLoadStart: Event("mozbrowserloadstart"),
+      onLoadEnd: Event("mozbrowserloadend"),
+      onIconChange: Event("mozbrowsericonchange"),
+      onLocationChange: Event("mozbrowserlocationchange"),
+      onSecurityChange: Event("mozbrowsersecuritychange"),
+      onTitleChange: Event("mozbrowsertitlechange"),
+
+      onPrompt: Event("mozbrowsershowmodalprompt"),
+      onAuthentificate: Event("mozbrowserusernameandpasswordrequired")
+    }
+  })
+  exports.IFrame = IFrame
 
   const Frame = Component({
     displayName: "Frame",
@@ -22,40 +71,12 @@ define((require, exports, module) => {
         canGoForward: false
       }
     },
-    mounted(target, options) {
-      //const frame = target.ownerDocument.createElement("iframe")
-      const frame = target.firstElementChild;
-      //frame.className = "flex-1"
-      frame.setAttribute("remote", true)
-      frame.setAttribute("mozbrowser", true);
-      frame.setAttribute("mozallowfullscreen", true);
-      frame.setAttribute("hidden", true);
 
-      frame.addEventListener("mozbrowserasyncscroll", this.onScroll);
-      frame.addEventListener("mozbrowserclose", this.onClose);
-      frame.addEventListener("mozbrowseropenwindow", this.onOpen);
-      frame.addEventListener("mozbrowsercontextmenu", this.onConextMenu);
-      frame.addEventListener("mozbrowsererror", this.onError);
-      frame.addEventListener("mozbrowsericonchange", this.onIconChange);
-      frame.addEventListener("mozbrowserloadend", this.onLoadEnd);
-      frame.addEventListener("mozbrowserloadstart", this.onLoadStart);
-      frame.addEventListener("mozbrowserlocationchange", this.onLocationChange);
-
-      frame.addEventListener("mozbrowsersecuritychange", this.onSecurityChange);
-      frame.addEventListener("mozbrowsershowmodalprompt", this.onPrompt);
-      frame.addEventListener("mozbrowsertitlechange", this.onTitleChange);
-      frame.addEventListener("mozbrowserusernameandpasswordrequired", this.onAuthentificate);
-      //frame.addEventListener("focus", this.onFocus);
-      //frame.addEventListener("blur", this.onBlur);
-
-      frame.parentNode.replaceChild(frame, frame)
-      //target.appendChild(frame);
-      this.patchAttributes(frame, options);
-    },
     patch(diff) {
       this.props.reset(Object.assign({}, this.props, diff))
     },
 
+    // Events
     onScroll() {
     },
     onAuthentificate() {
@@ -108,73 +129,66 @@ define((require, exports, module) => {
     onCanGoForward({target: {result}}) {
       this.patch({canGoForward: result})
     },
+
     onFocus() {
       this.patch({focused: true})
     },
     onBlur() {
       this.patch({focused: false})
     },
-
-    patchAttributes(node, after, before={}) {
-      if (after.selected !== before.selected) {
-        if (after.selected) {
-          node.removeAttribute("hidden")
-        } else {
-          node.setAttribute("hidden", "true")
-        }
+    onAction({target, action}) {
+      if (action === "reload") {
+        target.reload()
+      }
+      if (action === "goBack") {
+        target.goBack()
+      }
+      if (action === "goForward") {
+        target.goForward()
+      }
+      if (action === "stop") {
+        target.stop()
       }
 
-      if (after.url && after.url != before.url) {
-        node.src = after.isPrivileged ? after.url :
-        `data:,${after.url}`;
-      }
-
-      if (after.zoom !== before.zoom) {
-        node.zoom(after.zoom)
-      }
-
-      if (after.loading !== before.loading) {
-        node.getCanGoBack().onsuccess = this.onCanGoBack
-        node.getCanGoForward().onsuccess = this.onCanGoForward
-      }
-
-      if (after.action) {
-        if (after.action === "reload") {
-          node.reload()
-        }
-        if (after.action === "goBack") {
-          node.goBack()
-        }
-        if (after.action === "goForward") {
-          node.goForward()
-        }
-        if (after.action === "stop") {
-          node.stop()
-        }
-
-        this.patch({action: null})
-      }
-
-      if (after.focused && !before.focused) {
-        node.focus()
-      }
-    },
-    write(target, after, before) {
-      this.patchAttributes(target.firstElementChild, after, before)
+      this.patch({action: null})
     },
 
-    render({selected, id}) {
-      return html.div({className: "frame box flex-1",
-                       key: id,
-                       hidden: !selected}, [
-        html.iframe({
-          key: `frame-${id}`,
-          hidden: !selected,
-          className: "flex-1",
-          onBlur: this.onBlur,
-          onFocus: this.onFocus,
-        })
-      ])
+    write(target, {loading, action}, past) {
+      if (loading != past.loading) {
+        target.getCanGoBack().onsuccess = this.onCanGoBack
+        target.getCanGoForward().onsuccess = this.onCanGoForward
+      }
+
+      if (action && action != past.action) {
+        this.onAction(target, action)
+      }
+    },
+    render({id, url, selected, zoom, focused}) {
+      return IFrame({className: "frame box flex-1",
+                     key: `frame-${id}`,
+                     hidden: !selected,
+                     remote: true,
+                     browser: true,
+                     allowFullScreen: true,
+                     flex: 1,
+                     zoom, focused,
+                     src: url,
+
+                     onBlur: this.onBlur,
+                     onFocus: this.onFocus,
+                     onAsyncScroll: this.onScroll,
+                     onClose: this.onClose,
+                     onOpenWindow: this.onOpen,
+                     onContextMenu: this.onConextMenu,
+                     onError: this.onError,
+                     onLoadStart: this.onLoadStart,
+                     onLoadEnd: this.onLoadEnd,
+                     onIconChange: this.onIconChange,
+                     onLocationChange: this.onLocationChange,
+                     onSecurityChange: this.onSecurityChange,
+                     onTitleChange: this.onTitleChange,
+                     onPrompt: this.onPrompt,
+                     onAuthentificate: this.onAuthentificate})
     }
   })
 
