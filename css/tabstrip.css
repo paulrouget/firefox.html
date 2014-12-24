@@ -90,7 +90,8 @@
   margin: 0 3px 0 -6px;
 }
 
-.tab > .favicon:not([src]) {
+.tab > .favicon:not([src]),
+.tab > .favicon[src=""] {
   display: none;
 }
 
