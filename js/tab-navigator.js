@@ -1,10 +1,11 @@
 define((require, exports, module) => {
   "use strict";
 
-  const React = require("react")
-  const DOM  = React.DOM
+  const {Component} = require("js/component")
+  const {html}  = require("js/virtual-dom")
 
-  const Tab = React.createClass({
+  const Tab = Component({
+    displayName: "Tab",
     closeTab() {
       this.props.closeTab(this.props.frame)
     },
@@ -18,26 +19,27 @@ define((require, exports, module) => {
       }
     },
 
-    render() {
-      const { id, selected, title, favicon, loading, url } = this.props.frame
-
+    render({frame}) {
+      const { id, selected, title, favicon, loading, url } = frame
       const classList = ["tab", "hbox", "align", "center",
                          loading ? "loading" : "loaded",
                          selected ? "selected" : ""]
 
-      return DOM.div({
+      return html.div({
         className: classList.join(" "),
-        key: `tab-${id}`,
         onMouseDown: this.selectTab,
         onMouseUp: this.onMouseUp
       }, [
-        DOM.div({className: "throbber"}),
-        DOM.img(Object.assign({className: "favicon"},
-                              favicon ? {src: favicon} : {})),
-        DOM.div({className: "title hbox"},
-                title),
-        DOM.button({className: "close-button",
-                    onMouseUp: this.closeTab})
+        html.div({key: "throbber",
+                  className: "throbber"}),
+        html.img(Object.assign({key: "icon",
+                                className: "favicon"},
+                               favicon ? {src: favicon} : {src: null})),
+        html.div({key: "title",
+                  className: "title hbox"}, title),
+        html.button({key: "close-button",
+                     className: "close-button",
+                     onMouseUp: this.closeTab})
       ])
     }
   })
@@ -118,19 +120,23 @@ define((require, exports, module) => {
     }
   }
 
-  const TabNavigator = React.createClass({
-    componentWillMount() {
+  const TabNavigator = Component({
+    displayName: "TabNavigator",
+    mounted(target) {
+      this.injectStyles(target)
+    },
+    injectStyles({ownerDocument: document}) {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = "css/tabstrip.css";
       link.id = "tab-navigator-style";
 
-      const defaultStyleSheet = document.querySelector('link[title=default]');
+      const defaultStyleSheet = document.querySelector('link#default');
       document.head.insertBefore(link, defaultStyleSheet.nextSibling);
 
       link.addEventListener("load", this.onStyleReady)
     },
-    componentWillUnmount() {
+    unmount() {
       document.getElementById("tab-navigator-style").remove();
     },
     onStyleReady(event) {
@@ -146,17 +152,17 @@ define((require, exports, module) => {
     },
 
     renderTab(frame) {
-      return React.createElement(Tab, {
+      return Tab({
         frame,
+        key: `tab-${frame.id}`,
         closeTab: this.closeTab,
         selectTab: this.selectTab,
       })
     },
-    render() {
-      const tabs = this.props.frames.map(this.renderTab)
-      return DOM.div({
+    render({frames}) {
+      return html.div({
         className: "tabstrip toolbar hbox"
-      }, tabs)
+      }, frames.map(this.renderTab))
     }
   })
 
