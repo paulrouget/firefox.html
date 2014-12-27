@@ -100,7 +100,9 @@
   /* styles for the button-wrapper buttons */
   
 .button-wrapper > .reload-button {  background-position: 2px  -1px;  }
+.button-wrapper > .reload-button:active {  background-position: 2px  -15px;  }
 .button-wrapper > .stop-button {  background-position: -12px  0px;  }
+.button-wrapper > .stop-button:active {  background-position: -12px  -14px;  }
   
 .urlbar, .searchbar {
   background-color: white;
