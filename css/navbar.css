@@ -25,7 +25,7 @@
   border-color: #AAA;
 }
 
-.navbar > button {
+.navbar > button, .button-wrapper > button {
   width: 18px;
   min-width: 18px;
   height: 18px;
@@ -38,7 +38,7 @@
   border-radius: 3px;
 }
 
-.navbar > button.disabled {
+.navbar > button.disabled, .button-wrapper > button.disabled {
   pointer-events: none;
   opacity: 0.4;
 }
@@ -87,6 +87,8 @@
   border-color: #B0AEB0;
   border-bottom-width: 1px;
   min-width: 0;
+  position: relative;
+  white-space: normal;
 }
 
 .searchbar {
@@ -157,4 +159,14 @@
   .navbar.sslev .identity {
     background-image: url(images/shared/identity-icons-https-ev@2x.png);
   }
+}
+.button-wrapper {
+    position:absolute;
+    top:-1px;
+    right: 0;
+    height: 100%;
+    margin:0;
+    padding:0;
+    background-color: #FFF;
+    padding-left: 5px;
 }

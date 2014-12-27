@@ -26,11 +26,13 @@ function(UrlHelper, TabIframeDeck, RegisterKeyBindings) {
     <hbox class='navbar toolbar' align='center'>
       <button class='back-button' title='Go back one page'></button>
       <button class='forward-button' title='Go forward one page'></button>
-      <button class='reload-button' title='Reload current page'></button>
-      <button class='stop-button' title='Stop loading this page'></button>
       <hbox class='urlbar' flex='1' align='center'>
         <div class='identity'></div>
         <input placeholder='Search or enter address' class='urlinput' flex='1'>
+        <span class='button-wrapper'>      
+          <button class='reload-button' title='Reload current page'></button>
+          <button class='stop-button' title='Stop loading this page'></button>
+        </span>
       </hbox>
       <hbox class='searchbar' flex='1' align='center'>
         <div class='searchselector'></div>
