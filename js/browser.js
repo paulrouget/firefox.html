@@ -47,8 +47,15 @@ define((require, exports, module) => {
       }, Keyboard.keyboardDefaults())
     },
     selectFrame({id}) {
-      const {frames} = this.props
-      this.patch({frames: selectFrame(frames, id)})
+      const frames = selectFrame(this.props.frames, id)
+      const selected = selectFrame(frames)
+      // If frame does not has a URL it won't be created neither loaded
+      // in that case focus an input.
+      if (selected.url) {
+        this.patch({frames: frames})
+      } else {
+        this.patch({frames: frames, input: {focused: true}})
+      }
     },
     addFrame(options) {
       const {props} = this

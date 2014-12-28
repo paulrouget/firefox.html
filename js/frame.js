@@ -27,14 +27,13 @@ define((require, exports, module) => {
           node.zoom(current)
         }
       },
-      focused: function(node, value) {
-        if (value) {
+      focused(node, current, past) {
+        if (current) {
          node.focus()
-        } else {
-         node.blur()
         }
       }
     },
+
     events: {
       mozbrowserasyncscroll: "onAsyncScroll",
       mozbrowserclose: "onClose",
@@ -168,7 +167,6 @@ define((require, exports, module) => {
       return IFrame({className: "frame box flex-1",
                      key: `frame-${id}`,
                      hidden: !selected,
-                     disabled: !url,
                      remote: true,
                      browser: true,
                      allowFullScreen: true,

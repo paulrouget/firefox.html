@@ -188,6 +188,8 @@ define((require, exports, module) => {
                       className: "urlinput flex-1",
                       value: frame && (frame.input !== null ? frame.input : frame.url),
                       placeholder: "Search or enter address",
+                      tabIndex: 0,
+                      autoFocus: true,
 
                       onChange: this.onInputChange,
                       onKeyDown: this.onInputKey,
