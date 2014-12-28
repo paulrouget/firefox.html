@@ -21,8 +21,6 @@ require.config({
   }
 });
 
-//document.addEventListener("focus", (event) => document.querySelector("#outervbox").focus())
-//document.addEventListener("blur", (event) => document.body.firstElementChild.blur())
 
 window.OS = navigator.appVersion.contains('Win') ? "windows" :
             navigator.appVersion.contains("Mac") ? "osx" :
