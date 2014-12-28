@@ -45,16 +45,18 @@ define((require, exports, module) => {
     // are not recognized by react.
     const Type = React.createClass({
       displayName: `html:${name}`,
-      // Create listeners for this specific component as each listener
-      // needs to be bound to an instance to maintain it's internal state.
-      componentWillMount() {
-        this.setState({listeners: events && makeListeners(events)})
+      handleEvent(event) {
+        const name = events[event.type]
+        const handler = name && this.props[name]
+        if (handler) {
+          handler(event)
+        }
       },
       // Reflect attributes not recognized by react.
       componentDidMount() {
         const node = this.getDOMNode()
         const present = this.props
-        const listeners = this.state.listeners
+        //const listeners = this.state.listeners
 
         // If immutable attributes are defined set those and then reinject
         // node where it was to reflect proper configuration of node.
@@ -69,21 +71,18 @@ define((require, exports, module) => {
         }
 
         // Setup all the passed listeners.
-        if (listeners) {
-          write(node, listeners, present, noPast)
+        if (events) {
+          Object.keys(events).forEach(type => {
+            node.addEventListener(type, this, events[type])
+          })
         }
       },
       // Reflect attribute changes not recognized by react.
       componentDidUpdate(past) {
         const node = this.getDOMNode()
         const present = this.props
-        const listeners = this.state.listeners
         if (attributes) {
           write(node, attributes, present, past)
-        }
-
-        if (listeners) {
-          write(node, listeners, present, past)
         }
       },
       // Render renders wrapped HTML node.

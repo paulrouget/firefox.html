@@ -36,20 +36,20 @@ define((require, exports, module) => {
       }
     },
     events: {
-      onAsyncScroll: Event("mozbrowserasyncscroll"),
-      onClose: Event("mozbrowserclose"),
-      onOpenWindow: Event("mozbrowseropenwindow"),
-      onContextMenu: Event("mozbrowsercontextmenu"),
-      onError: Event("mozbrowsererror"),
-      onLoadStart: Event("mozbrowserloadstart"),
-      onLoadEnd: Event("mozbrowserloadend"),
-      onIconChange: Event("mozbrowsericonchange"),
-      onLocationChange: Event("mozbrowserlocationchange"),
-      onSecurityChange: Event("mozbrowsersecuritychange"),
-      onTitleChange: Event("mozbrowsertitlechange"),
+      mozbrowserasyncscroll: "onAsyncScroll",
+      mozbrowserclose: "onClose",
+      mozbrowseropenwindow: "onOpenWindow",
+      mozbrowsercontextmenu: "onContextMenu",
+      mozbrowsererror: "onError",
+      mozbrowserloadstart: "onLoadStart",
+      mozbrowserloadend: "onLoadEnd",
+      mozbrowsericonchange: "onIconChange",
+      mozbrowserlocationchange: "onLocationChange",
+      mozbrowsersecuritychange: "onSecurityChange",
+      mozbrowsertitlechange: "onTitleChange",
 
-      onPrompt: Event("mozbrowsershowmodalprompt"),
-      onAuthentificate: Event("mozbrowserusernameandpasswordrequired")
+      mozbrowsershowmodalprompt: "onPrompt",
+      mozbrowserusernameandpasswordrequired: "onAuthentificate"
     }
   })
   exports.IFrame = IFrame
