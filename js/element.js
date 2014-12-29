@@ -3,87 +3,79 @@ define((require, exports, module) => {
 
   const React = require("react")
 
-  const noPast = Object.create(null)
+  const isPreMountHook = field => field && field.mount
+  exports.isPreMountHook = isPreMountHook
 
-  const write = (target, writers, current, past) => {
-    Object.keys(writers).forEach(name =>
-      writers[name](target, current[name], past[name]))
-  }
+  const isPostMountHook = field => field && field.mounted
+  exports.isPostMountHook = isPostMountHook
 
-  const makeListeners = events => {
-    const listeners = Object.create(null)
-    Object.keys(events).forEach(name => {
-      listeners[name] = events[name]()
-    })
-    return listeners
-  }
+  const isUpdateHook = field => field && field.write
+  exports.isUpdateHook = isUpdateHook
 
-  // Element can be used to define a custom HTML elements that can
-  // be used from React's render. Function takes `name` of the element
-  // which will translate to a `tagName`. `attributes` hash map that
-  // maps recognized attribute names to functions that take (node,
-  // currentValue, pastValue) and take care of updating node to reflect
-  // that change (see Element.Attribute for common cases). `events` hash
-  // map that is event handler names recognized mapped to constructors
-  // that return function which takes (node, currentListener, pastListener)
-  // and take care of adding / removing listeners (see Element.Event for
-  // common cases). `options` hash map that is similar to `attributes` with
-  // a difference that reflecting those attributes will force reinjection
-  // of a node into a document (This is to handle some attributes who are
-  // not affected by changes after node is in the tree).
-  const Element = (name, settings={}) => {
-    const {options, attributes, events} = settings
+  const isConstractorHook = field => field && field.construct
+  exports.isConstractorHook = isConstractorHook
+
+  const Element = (name, fields={}) => {
     // In react you can actually define custom HTML element it's
     // just set of attributes you'll be able to set will be limited
     // to React's white list. To workaround that we define React
     // custom HTML element factory & custom react component that
     // will render that HTML element via custom factory.
     const Node = React.createFactory(name)
+    const keys = Object.keys(fields)
+    const mountHooks = keys.filter(key => isPreMountHook(fields[key]))
+    const mountedHooks = keys.filter(key => isPostMountHook(fields[key]))
+    const updateHooks = keys.filter(key => isUpdateHook(fields[key]))
+    const constractorHooks = keys.filter(key => isConstractorHook(fields[key]))
+
 
     // React component is a wrapper around the our custom HTML Node
     // who's whole purpose is to update attributes of the node that
     // are not recognized by react.
     const Type = React.createClass({
       displayName: `html:${name}`,
-      handleEvent(event) {
-        const name = events[event.type]
-        const handler = name && this.props[name]
-        if (handler) {
-          handler(event)
-        }
+      getInitialState() {
+        const state = Object.assign({}, fields)
+        constractorHooks.forEach(key => {
+          state[key] = fields[key].construct()
+        })
+        return state
       },
       // Reflect attributes not recognized by react.
       componentDidMount() {
         const node = this.getDOMNode()
         const present = this.props
-        //const listeners = this.state.listeners
+        const hooks = this.state
 
-        // If immutable attributes are defined set those and then reinject
-        // node where it was to reflect proper configuration of node.
-        if (options) {
-          write(node, options, present, noPast)
+        if (mountHooks.length > 0) {
+          mountHooks.forEach(name => {
+            const hook = hooks[name]
+            const value = present[name]
+            hook.mount(node, value)
+          })
+
+          // Pre mount fields need to be set before node
+          // is in the document. Since react does not has
+          // an appropriate hook we replace node with itself
+          // to trigger desired behavior.
           node.parentNode.replaceChild(node, node)
         }
 
-        // Reflect other attributes once node is a tree.
-        if (attributes) {
-          write(node, attributes, present, noPast)
-        }
-
-        // Setup all the passed listeners.
-        if (events) {
-          Object.keys(events).forEach(type => {
-            node.addEventListener(type, this, events[type])
-          })
-        }
+        mountedHooks.forEach(name => {
+          const hook = hooks[name]
+          hook.mounted(node, present[name])
+        })
       },
       // Reflect attribute changes not recognized by react.
       componentDidUpdate(past) {
         const node = this.getDOMNode()
         const present = this.props
-        if (attributes) {
-          write(node, attributes, present, past)
-        }
+        const hooks = this.state
+
+        updateHooks.forEach(name => {
+          const hook = hooks[name]
+          hook.write(node, present[name], past[name])
+        })
       },
       // Render renders wrapped HTML node.
       render() {
@@ -94,69 +86,141 @@ define((require, exports, module) => {
   }
   exports.Element = Element
 
-  // Utility for defining attributes on custom elements.
-  // Examples:
-  // Element("vbox", {attributes: {flex: Attribute("flex")}})
-  // Element("iframe", {attributes: {browser: Attribute("mozbrowser")}})
-  const Attribute = name => (node, current, past) => {
-    if (current != void(0)) {
-      node.setAttribute(name, current)
+  // Option can be used to define attribute on the element
+  // that is set once before element is inserted into a
+  // document (mounted). Changes to this option are ignored
+  // & in general use of `Attribute` is preferred, this should
+  // be reserved only for attributes changes to which aren't picked
+  // up after node is in the tree.
+  // Example: Element("iframe", { browser: Option("mozbrowser") })
+  const Option = function(name) {
+    if (!(this instanceof Option)) {
+      return new Option(name)
     }
-    else if (current != past) {
-      node.removeAttribute(name)
+
+    this.name = name
+  }
+  // 6 3/8
+  Option.prototype = {
+    constructor: Option,
+    mount(node, value) {
+      node.setAttribute(this.name, value)
+    }
+  }
+  Element.Option = Option
+  exports.Option = Option
+
+  // Attribute can be used to define field mapped to a
+  // DOM attribute with a given `name`. If the field is
+  // set to `undefined` or `null` attribute is removed
+  // othrewise it's set to given value.
+  // Example: Element("hbox", {flex: Attribute("flex")})
+  const Attribute = function(name) {
+    if (!(this instanceof Attribute)) {
+      return new Attribute(name)
+    }
+
+    this.name = name
+  }
+  Attribute.prototype = {
+    constructor: Attribute,
+    mounted(node, value) {
+      if (value != void(0)) {
+        node.setAttribute(this.name, value)
+      }
+    },
+    write(node, present, past) {
+      if (present != past) {
+        if (present == void(0)) {
+          node.removeAttribute(this.name)
+        }
+        else {
+          node.setAttribute(this.name, present)
+        }
+      }
     }
   }
   Element.Attribute = Attribute
   exports.Attribute = Attribute
 
-  // Utility for defining attributes that are set to canstant
-  // value regardless of options passed.
+  // Field can be used to define fields that can't be
+  // mapped to an attribute in the DOM. Field is defined
+  // by providing a function that will be invoked target
+  // `node` `current` value & `past` value and it's supposed
+  // to reflect changes in the DOM. Note that on initial
+  // render `past` will be `void(0)`.
+  //
   // Example:
-  // Element("iframe", {options: {browser: Attribute("mozbrowser", true),
-  //                              remote: Attribute("remote", true)}})
-  const Constant = (name, value) => (node, _1, _2) => {
-    node.setAttribute(name, value)
+  // Element("iframe", {focused: (node, current, past) => {
+  //   if (current) {
+  //     node.focus()
+  //   }
+  // }})
+  const Field = function(write) {
+    if (!(this instanceof Field)) {
+      return new Field(write)
+    }
+    this.write = write
   }
-  Element.Constant = Constant
-  exports.Constant = Constant
+  Field.prototype = {
+    constructor: Attribute,
+    mounted(node, value) {
+      this.write(node, value, void(0))
+    }
+  }
+  Element.Field = Field
+  exports.Field = Field
 
-  const Listener = function(name, handler, capture) {
-    this.name = name
+  // Event can be used to define event handler fields, for
+  // the given event `type`. When event of that type occurs
+  // event handler assigned to the associated field will be
+  // invoked. Optionally `read` function can be passed as a
+  // second argument, in which case event handler will be
+  // invoked with `read(event)` instead of `event`.
+  // Example:
+  // Element("iframe", {onTitleChange: Event("mozbrowsertitlechange")})
+  const Event = function(type, read, capture=false) {
+    if (!(this instanceof Event)) {
+      return new Event(type, read)
+    }
+    this.type = type
+    this.read = read
     this.capture = capture
-    this.handler = handler
   }
-  Listener.prototype = {
-    constructor: Listener,
-    setListener(node, listener) {
-      if (!this.listener && listener) {
-        node.addEventListener(this.name, this, this.capture)
-      }
-      if (this.listener && !listener) {
-        node.removeEventListener(this.name, this, this.capture)
-      }
-      this.listener = listener
+  Event.prototype = {
+    constructor: Event,
+    construct() {
+      return new this.constructor(this.type, this.read, this.capture)
+    },
+    capture: false,
+    mounted(node, handler) {
+      this.handler = handler
+      node.addEventListener(this.type, this, this.capture)
+    },
+    write(node, present) {
+      this.handler = present
     },
     handleEvent(event) {
       if (this.handler) {
-        this.handler(event, this.listener)
-      } else {
-        this.listener(event)
+        this.handler(this.read ? this.read(event) : event)
       }
     }
   }
-
-  const Event = (name, handler, catpure=false) => () => {
-    const listener = new Listener(name, false, handler)
-    return (node, after, before) => {
-      listener.setListener(node, after)
-    }
-  }
-  Element.Listener = Listener
   Element.Event = Event
   exports.Event = Event
 
-  const CapturedEvent = (name, handler) => Event(name, handler, true)
+  // CapturedEvent can be used same as `Event` with a difference
+  // that events listeners will be added with a capture `true`.
+  const CapturedEvent = function(type, read) {
+    if (!(this instanceof CapturedEvent)) {
+      return new Event(type, read)
+    }
+
+    this.type = type
+    this.read = read
+    this.capture = true
+  }
+  CapturedEvent.prototype = Event.prototype
   Element.CapturedEvent = CapturedEvent
   exports.CapturedEvent = CapturedEvent
-
 })

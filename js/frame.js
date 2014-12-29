@@ -3,64 +3,56 @@ define((require, exports, module) => {
 
   const {Component} = require("js/component")
   const {html} = require("js/virtual-dom")
-  const {Element, Attribute, Event} = require("js/element")
+  const {Element, Option, Attribute, Field, Event } = require("js/element")
 
   const IFrame = Element("iframe", {
-    options: {
-      remote: Attribute("remote"),
-      browser: Attribute("mozbrowser"),
-      allowFullScreen: Attribute("mozallowfullscreen"),
-      flex: Attribute("flex")
-    },
-    attributes: {
-      location(node, current, past) {
-        if (current != past) {
-          // React batches updates on animation frame which
-          // seems to trigger a bug in mozbrowser causing it
-          // to load previous location instead of current one.
-          // To workaround that we delay `src` update.
-          setTimeout(() => node.src = current)
-        }
-      },
-      hidden(node, current, past) {
-        if (current) {
-          node.setAttribute("hidden", true)
-          node.setVisible(false)
-        } else if (past) {
-          node.removeAttribute("hidden")
-          node.setVisible(true)
-        }
-      },
-      zoom(node, current, past) {
-        if (current != past) {
-          node.zoom(current)
-        }
-      },
-      focused(node, current, past) {
-        if (current) {
-         node.focus()
-        }
+    remote: Option("remote"),
+    browser: Option("mozbrowser"),
+    allowFullScreen: Option("mozallowfullscreen"),
+    flex: Attribute("flex"),
+    location: Field((node, current, past) => {
+      if (current != past) {
+        // React batches updates on animation frame which
+        // seems to trigger a bug in mozbrowser causing it
+        // to load previous location instead of current one.
+        // To workaround that we delay `src` update.
+        setTimeout(() => node.src = current)
       }
-    },
+    }),
+    hidden: Field((node, current, past) => {
+      if (current) {
+        node.setAttribute("hidden", true)
+        node.setVisible(false)
+      } else if (past) {
+        node.removeAttribute("hidden")
+        node.setVisible(true)
+      }
+    }),
+    zoom: Field((node, current, past) => {
 
-    events: {
-      mozbrowserasyncscroll: "onAsyncScroll",
-      mozbrowserclose: "onClose",
-      mozbrowseropenwindow: "onOpenWindow",
-      mozbrowsercontextmenu: "onContextMenu",
-      mozbrowsererror: "onError",
-      mozbrowserloadstart: "onLoadStart",
-      mozbrowserloadend: "onLoadEnd",
-      mozbrowsericonchange: "onIconChange",
-      mozbrowserlocationchange: "onLocationChange",
-      mozbrowsersecuritychange: "onSecurityChange",
-      mozbrowsertitlechange: "onTitleChange",
-
-      mozbrowsershowmodalprompt: "onPrompt",
-      mozbrowserusernameandpasswordrequired: "onAuthentificate"
-    }
+      if (current != past) {
+        node.zoom(current)
+      }
+    }),
+    focused: Field((node, current, past) => {
+      if (current) {
+        node.focus()
+      }
+    }),
+    onAsyncScroll: Event("mozbrowserasyncscroll"),
+    onClose: Event("mozbrowserclose"),
+    onOpenWindow: Event("mozbrowseropenwindow"),
+    onContextMenu: Event("mozbrowsercontextmenu"),
+    onError: Event("mozbrowsererror"),
+    onLoadStart: Event("mozbrowserloadstart"),
+    onLoadEnd: Event("mozbrowserloadend"),
+    onIconChange: Event("mozbrowsericonchange"),
+    onLocationChange: Event("mozbrowserlocationchange"),
+    onSecurityChange: Event("mozbrowsersecuritychange"),
+    onTitleChange: Event("mozbrowsertitlechange"),
+    onPrompt: Event("mozbrowsershowmodalprompt"),
+    onAuthentificate: Event("mozbrowserusernameandpasswordrequired")
   })
-  exports.IFrame = IFrame
 
   const Frame = Component({
     displayName: "Frame",
@@ -145,6 +137,7 @@ define((require, exports, module) => {
       this.patch({focused: false})
     },
     onAction({target, action}) {
+      if (!target) return;
       if (action === "reload") {
         target.reload()
       }
