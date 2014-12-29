@@ -51,6 +51,8 @@ define((require, exports, module) => {
   exports.KeysPressed = KeysPressed
 
 
+  // These should be symbols but they are not supported
+  // by react yet so we're going to use strings for now.
   const patch = "Keyboard/patch"
   const field = "keyboard/field"
   const bindings = "keyborad/bindings"
@@ -67,13 +69,19 @@ define((require, exports, module) => {
   exports.isModifier = isModifier
 
   const Keyboard = {
+    // Keyborad stores state of pressed keys under the field
+    // it was configured to. Default is `keysPressed` although
+    // it could be overrided to something else.
     [field]: "keysPressed",
     [patch](delta) {
-      this.setProps({[this[field]]:
-                     KeysPressed.patch(this.props[this[field]], delta)})
+      const keyboardField = this[field];
+      const state = this.props[keyboardField];
+
+      this.setProps({[keyboardField]: KeysPressed.patch(state, delta)});
     },
     keyboardDefaults() {
-      return {[Keyboard[field]]: KeysPressed.empty()}
+      const keyboardField = this[field];
+      return {[keyboardField]: KeysPressed.empty()}
     },
     overlay(element) {
       element.onBlur = this.onBlur
@@ -163,8 +171,9 @@ define((require, exports, module) => {
                             [bindings]: table})
     },
     componentWillReceiveProps(props) {
-      const after = props[this[field]]
-      const before = this.props[this[field]]
+      const keyboardField = this[field];
+      const after = props[keyboardField]
+      const before = this.props[keyboardField]
       if (!KeysPressed.equal(before, after)) {
         this.onKeyBinding(after)
       }
