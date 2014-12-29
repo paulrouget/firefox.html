@@ -91,7 +91,7 @@ define((require, exports, module) => {
         this.props.close(this.props)
       }
     },
-    onConextMenu() {
+    onContextMenu() {
     },
     onError(event) {
       console.error(event)
@@ -181,7 +181,7 @@ define((require, exports, module) => {
                      onAsyncScroll: this.onScroll,
                      onClose: this.onClose,
                      onOpenWindow: this.onOpen,
-                     onContextMenu: this.onConextMenu,
+                     onContextMenu: this.onContextMenu,
                      onError: this.onError,
                      onLoadStart: this.onLoadStart,
                      onLoadEnd: this.onLoadEnd,
