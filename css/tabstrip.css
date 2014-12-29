@@ -91,7 +91,8 @@
   image-rendering: optimizequality;
 }
 
-.tab > .favicon:not([src]) {
+.tab > .favicon:not([src]),
+.tab > .favicon[src=""] {
   display: none;
 }
 
