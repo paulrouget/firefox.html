@@ -3,6 +3,7 @@ define((require, exports, module) => {
 
   const {Component} = require("js/component")
   const {html}  = require("js/virtual-dom")
+  const {Link} = require("js/virtual-dom/link")
 
   const Tab = Component({
     displayName: "Tab",
@@ -45,7 +46,8 @@ define((require, exports, module) => {
   })
   exports.Tab = Tab
 
-  function BuildCurvedTabs() {
+  function BuildCurvedTabs(document) {
+    let window = document.defaultView;
     let curveDummyElt = document.querySelector('.dummy-tab-curve');
     let style = window.getComputedStyle(curveDummyElt);
 
@@ -122,26 +124,10 @@ define((require, exports, module) => {
 
   const TabNavigator = Component({
     displayName: "TabNavigator",
-    mounted(target) {
-      this.injectStyles(target)
-    },
-    injectStyles({ownerDocument: document}) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "css/tabstrip.css";
-      link.id = "tab-navigator-style";
-
-      const defaultStyleSheet = document.querySelector("link[title=default]");
-      document.head.insertBefore(link, defaultStyleSheet.nextSibling);
-
-      link.addEventListener("load", this.onStyleReady)
-    },
-    unmount() {
-      document.getElementById("tab-navigator-style").remove();
-    },
-    onStyleReady(event) {
-      event.target.removeEventListener("load", this.onStyleReady);
-      BuildCurvedTabs();
+    onStyleReady({target}) {
+      // Todo: Inline BuildCurvedTabs or move it to a separate
+      // module instead of just keeping a copy around.
+      BuildCurvedTabs(target.ownerDocument);
     },
 
     closeTab(frame) {
@@ -162,7 +148,12 @@ define((require, exports, module) => {
     render({frames}) {
       return html.div({
         className: "tabstrip toolbar hbox"
-      }, frames.map(this.renderTab))
+      }, [
+        Link({rel: "stylesheet",
+              href: "css/tabstrip.css",
+              onLoad: this.onStyleReady}),
+        ...frames.map(this.renderTab)
+      ])
     }
   })
 

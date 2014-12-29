@@ -22,17 +22,6 @@ define((require, exports, module) => {
     mixins: [KeyBindings.make("keysPressed",
                               {"@meta l": "focusInput",
                                "@meta k": "focusSearch"})],
-    injectStyles({ownerDocument: document}) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "css/navbar.css";
-      link.id = "navigator-panel-style";
-
-      const defaultStyleSheet = document.querySelector("link[title=default]");
-      document.head.insertBefore(link, defaultStyleSheet.nextSibling);
-
-      link.addEventListener("load", this.onStyleReady)
-    },
     equal(before, after) {
       return before.input == after.input &&
              before.search == after.search &&
@@ -140,10 +129,6 @@ define((require, exports, module) => {
         node.select()
       }
     },
-    mounted(target) {
-      this.injectStyles(target)
-      this.componentDidUpdate({input: {}, search: {}})
-    },
     render({frame, input, search}) {
       const classList = [
         "navbar", "toolbar", "hbox", "align", "center",
@@ -155,6 +140,8 @@ define((require, exports, module) => {
       return html.div({
         className: classList.join(" ")
       }, [
+        html.link({"rel": "stylesheet",
+                   "href": "css/navbar.css"}),
         html.button({
           key: "back-button",
           className: ["back-button",
