@@ -30,8 +30,11 @@ require(['react', 'js/browser'], (React, Browser) => {
   // IS_PRIVILEGED is false if Firefox.html runs in a regular browser,
   // with no Browser API.
   React.render(Browser({
+    version: "0.0.2",
     isPrivileged: !!HTMLIFrameElement.prototype.setVisible,
     // Detect Operating System
-    OS: window.OS
+    OS: window.OS,
+    // Change theme value to "dark" to enable dark theme.
+    theme: "bright",
   }), document.body);
 });

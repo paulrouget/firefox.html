@@ -7,6 +7,7 @@ define((require, exports, module) => {
   const {TabNavigator} = require("js/tab-navigator")
   const {NavigationPanel} = require("js/navigation-panel")
   const {Keyboard} = require("js/keyboard")
+  const {Theme} = require("js/theme")
 
   const focusInput = input =>
     Object.assign({}, input, {focused: true})
@@ -38,7 +39,6 @@ define((require, exports, module) => {
     mixins: [Keyboard],
     defaults() {
       return Object.assign({
-        version: "0.0.1",
         isPrivileged: true,
         frameID: 0,
         frames: [{id: 0, selected: true}],
@@ -96,19 +96,30 @@ define((require, exports, module) => {
       this.patch({search: state})
     },
 
+    serializeSession() {
+      const session = Object.assign({}, this.props)
+      const defaults = this.defaults()
+
+      delete session.theme
+      delete session.OS
+      delete session.theme
+
+      return JSON.stringify(session)
+    },
     clearSession() {
       localStorage.removeItem("session")
+      this.restoreSession()
     },
     saveSession() {
-      localStorage.setItem("session", JSON.stringify(this.props))
+      localStorage.setItem("session", this.serializeSession())
     },
     restoreSession() {
       const data = localStorage.getItem("session")
       const session = data && JSON.parse(data)
       if (session && session.version === this.props.version) {
-        this.reset(session)
+        this.patch(session)
       }
-      else {
+      else if (session) {
         const backup = `session@${session.version}`
         localStorage.setItem(backup, data)
         console.error(`Stored session ${session.version} version is incompatible with current ${this.props.version} version.
@@ -125,7 +136,7 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
       this.saveSession();
     },
     render(options) {
-       const {frames, input, search, keysPressed, isPrivileged} = options
+       const {frames, input, search, keysPressed, isPrivileged, theme} = options
        //console.log(options)
        const frame = frames.find(frame => frame.selected);
        return html.div({id: "outervbox",
@@ -134,6 +145,9 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
                         onBlur: this.onBlur,
                         onKeyDown: this.onKeyDown,
                         onKeyUp: this.onKeyUp}, [
+
+          Theme({name: theme}),
+
           TabNavigator({
             key: "tab-navigator",
             frames,
