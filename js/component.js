@@ -74,5 +74,6 @@ define((require, exports, module) => {
     }
   }
   exports.Component = Component
-  exports.React = React
+
+  exports.render = React.render
 })

@@ -1,7 +1,7 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {Component, React} = require("js/component")
+  const {Component} = require("js/component")
   const {html} = require("js/virtual-dom")
   const {FrameDeck} = require("js/frame-deck")
   const {TabNavigator} = require("js/tab-navigator")
@@ -188,5 +188,5 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
     }
   })
 
-  module.exports = Browser
+  exports.Browser = Browser
 })

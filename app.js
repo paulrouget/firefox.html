@@ -26,10 +26,10 @@ window.OS = navigator.appVersion.contains('Win') ? "windows" :
             navigator.appVersion.contains("Mac") ? "osx" :
             navigator.appVersion.contains("X11") ? "linux" :
             "unknown";
-require(['react', 'js/browser'], (React, Browser) => {
+require(['js/component', 'js/browser'], ({render}, {Browser}) => {
   // IS_PRIVILEGED is false if Firefox.html runs in a regular browser,
   // with no Browser API.
-  React.render(Browser({
+  render(Browser({
     version: "0.0.2",
     isPrivileged: !!HTMLIFrameElement.prototype.setVisible,
     // Detect Operating System
