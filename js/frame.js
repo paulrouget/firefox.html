@@ -13,6 +13,15 @@ define((require, exports, module) => {
       flex: Attribute("flex")
     },
     attributes: {
+      location(node, current, past) {
+        if (current != past) {
+          // React batches updates on animation frame which
+          // seems to trigger a bug in mozbrowser causing it
+          // to load previous location instead of current one.
+          // To workaround that we delay `src` update.
+          setTimeout(() => node.src = current)
+        }
+      },
       hidden(node, current, past) {
         if (current) {
           node.setAttribute("hidden", true)
@@ -172,7 +181,7 @@ define((require, exports, module) => {
                      allowFullScreen: true,
                      flex: 1,
                      zoom, focused,
-                     src: url,
+                     location: url,
 
                      onBlur: this.onBlur,
                      onFocus: this.onFocus,
@@ -188,7 +197,8 @@ define((require, exports, module) => {
                      onSecurityChange: this.onSecurityChange,
                      onTitleChange: this.onTitleChange,
                      onPrompt: this.onPrompt,
-                     onAuthentificate: this.onAuthentificate})
+                     onAuthentificate: this.onAuthentificate
+                    })
     }
   })
 
