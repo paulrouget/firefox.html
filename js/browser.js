@@ -117,21 +117,20 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
     },
 
     mounted(target, options) {
+      target.ownerDocument.defaultView.addEventListener("beforeunload", this.onUnload)
       target.ownerDocument.body.setAttribute("os", options.OS);
       this.restoreSession()
     },
-    write(_, state) {
-      if (this.isReady) {
-        console.log(">>>>>>", state)
-        this.saveSession()
-      }
+    onUnload(event) {
+      this.saveSession();
     },
     render(options) {
        const {frames, input, search, keysPressed, isPrivileged} = options
-       console.log(options)
+       //console.log(options)
        const frame = frames.find(frame => frame.selected);
        return html.div({id: "outervbox",
                         className: "vbox flex-1",
+                        onUnload: this.onUnload,
                         onBlur: this.onBlur,
                         onKeyDown: this.onKeyDown,
                         onKeyUp: this.onKeyUp}, [
