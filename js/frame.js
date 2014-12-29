@@ -159,7 +159,7 @@ define((require, exports, module) => {
       }
 
       if (action && action != past.action) {
-        this.onAction(target, action)
+        this.onAction({target, action})
       }
     },
     render({id, url, selected, zoom, focused}) {
