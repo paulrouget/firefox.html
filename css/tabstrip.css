@@ -27,12 +27,46 @@
   background-clip: border-box;
 }
 
+.tab[animate] {
+  will-change: transform;
+  animation: tab-animation 0.2s linear;
+}
+
+.tab[animate][closing] {
+  pointer-events: none;
+  animation: tab-animation-reverse 0.2s linear;
+}
+
+@keyframes tab-animation {
+  0% {
+    transform: translateX(-100%) scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes tab-animation-reverse {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-100%) scale(0);
+    opacity: 0;
+  }
+}
+
 [os="linux"] .dummy-tab-curve {
   /* These values are used in curvedTabs.js */
   --curve-border: transparent;
   --curve-gradient-start: #FBFBFB;
   --curve-gradient-end: #EDEDED;
-  --curve-hover-border: transparent;
+  --curve-hover-border: #BBB;
   --curve-hover-gradient-start: rgba(255,255,255,0.4);
   --curve-hover-gradient-end: rgba(255,255,255,0.4);
 }
@@ -41,8 +75,8 @@
   /* These values are used in curvedTabs.js */
   --curve-border: transparent;
   --curve-gradient-start: #FBFBFB;
-  --curve-gradient-end: #EDEDED;
-  --curve-hover-border: #AAA;
+  --curve-gradient-end: #F8F8F8;
+  --curve-hover-border: transparent;
   --curve-hover-gradient-start: rgba(255, 255, 255, 0.4);
   --curve-hover-gradient-end: rgba(255, 255, 255, 0.4);
 }
@@ -119,8 +153,6 @@
   overflow-x: hidden;
   z-index: 1000;
   opacity: 0.7;
-  font: -moz-field;
-  font-size: 12px;
   outline: none;
 }
 
