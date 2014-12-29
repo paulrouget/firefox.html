@@ -23,31 +23,29 @@ function(UrlHelper, TabIframeDeck, RegisterKeyBindings) {
   document.head.insertBefore(link, defaultStyleSheet.nextSibling);
 
   let html = `
-    <div class='navbar toolbar hbox' align='center'>
+    <hbox class='navbar toolbar' align='center'>
       <button class='back-button'></button>
       <button class='forward-button'></button>
       <button class='reload-button'></button>
       <button class='stop-button'></button>
-      <div class='urlbar hbox' flex='1' align='center'>
+      <hbox class='urlbar' flex='1' align='center'>
         <div class='identity'></div>
         <input placeholder='Search or enter address' class='urlinput' flex='1'>
-      </div>
-      <div class='searchbar hbox' flex='1' align='center'>
+      </hbox>
+      <hbox class='searchbar' flex='1' align='center'>
         <div class='searchselector'></div>
         <input placeholder='Yahoo' class='searchinput'>
-      </div>
+      </hbox>
       <button class='menu-button'></button>
-    </div>
+    </hbox>
   `;
   let outervbox = document.querySelector('#outervbox');
   let outerhbox = document.querySelector('#outerhbox');
-  let placeholder = document.createElement('div');
-  placeholder.classList.add('hbox');
+  let placeholder = document.createElement('hbox');
   outervbox.insertBefore(placeholder, outerhbox);
   placeholder.outerHTML = html;
 
   let navbar = document.querySelector('.navbar');
-
 
   let urlTemplate = 'https://search.yahoo.com/search?p={searchTerms}';
 
