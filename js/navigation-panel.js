@@ -178,6 +178,7 @@ define((require, exports, module) => {
                       tabIndex: 0,
                       autoFocus: true,
 
+                      onClick: this.focusInput,
                       onChange: this.onInputChange,
                       onKeyDown: this.onInputKey,
                       onFocus: this.onInputFocus,
@@ -195,6 +196,7 @@ define((require, exports, module) => {
                       value: search.query,
                       placeholder: "Yahoo",
 
+                      onClick: this.focusSearch,
                       onChange: this.onSearchChange,
                       onKeyDown: this.onSearchKey,
                       onFocus: this.onSearchFocus,
