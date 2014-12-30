@@ -20,7 +20,7 @@ define((require, exports, module) => {
       }
     },
 
-    render({frame}) {
+    render({frame, tabStyle}) {
       const { id, selected, title, favicon, loading, url } = frame
       const classList = ["tab", "hbox", "align", "center",
                          loading ? "loading" : "loaded",
@@ -37,7 +37,9 @@ define((require, exports, module) => {
                                 className: "favicon"},
                                favicon ? {src: favicon} : {src: null})),
         html.div({key: "title",
-                  className: "title hbox"}, title),
+                  className: "hbox title title-wrapper"}, [
+          html.span({className: "title"}, title)
+        ]),
         html.button({key: "close-button",
                      className: "close-button",
                      onMouseUp: this.closeTab})
@@ -143,19 +145,25 @@ define((require, exports, module) => {
         key: `tab-${frame.id}`,
         closeTab: this.closeTab,
         selectTab: this.selectTab,
+        tabStyle: this.props.tabStyle
       })
     },
-    render({frames}) {
-      return html.div({
-        className: "tabstrip toolbar hbox"
-      }, [
-        Link({rel: "stylesheet",
-              href: "css/tabstrip.css",
-              onLoad: this.onStyleReady}),
+    render({frames, tabStyle}) {
+      const link = tabStyle == "vertical" ?
+                   Link({rel: "stylesheet",
+                         href: "css/sidetabs.css"}) :
+                   Link({rel: "stylesheet",
+                         href: "css/tabstrip.css",
+                         onLoad: this.onStyleReady})
+      const className = tabStyle == "vertical" ?
+                        "vbox pack start verticaltabstrip" :
+                        "tabstrip toolbar hbox"
+      return html.div({className}, [
+        link,
         ...frames.map(this.renderTab)
       ])
     }
   })
 
   exports.TabNavigator = TabNavigator
-});
+})

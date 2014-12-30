@@ -103,6 +103,7 @@ define((require, exports, module) => {
       delete session.theme
       delete session.OS
       delete session.theme
+      delete session.tabStyle
 
       return JSON.stringify(session)
     },
@@ -136,9 +137,23 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
       this.saveSession();
     },
     render(options) {
-       const {frames, input, search, keysPressed, isPrivileged, theme} = options
+       const {frames, input, search, keysPressed,
+              isPrivileged, theme, tabStyle} = options;
        //console.log(options)
        const frame = frames.find(frame => frame.selected);
+
+        // TODO: At the moment tabNavigator is inserted in
+        // different location in the tree depending on style
+        // tabs rendered. This is not ideal and should be
+        // handled purely by styling in a future.
+       const tabNavigator = TabNavigator({
+         key: "tab-navigator",
+         frames, tabStyle,
+         addTab: this.addFrame,
+         closeTab: this.removeFrame,
+         selectTab: this.selectFrame
+       });
+
        return html.div({id: "outervbox",
                         className: "vbox flex-1",
                         onUnload: this.onUnload,
@@ -148,13 +163,7 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
 
           Theme({name: theme}),
 
-          TabNavigator({
-            key: "tab-navigator",
-            frames,
-            addTab: this.addFrame,
-            closeTab: this.removeFrame,
-            selectTab: this.selectFrame
-          }),
+          ...(tabStyle != "vertical" ? [tabNavigator] : []),
 
           NavigationPanel({
             key: "navigation-panel",
@@ -179,7 +188,9 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
               selectFrame: this.selectFrame,
               clearSession: this.clearSession,
               saveSession: this.saveSession
-            })
+            }),
+
+            ...(tabStyle == "vertical" ? [tabNavigator] : []),
           ]),
           html.div({key: "tab-curve",
                     hidden: "true",

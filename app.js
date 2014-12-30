@@ -36,5 +36,8 @@ require(['js/component', 'js/browser'], ({render}, {Browser}) => {
     OS: window.OS,
     // Change theme value to "dark" to enable dark theme.
     theme: "bright",
+    // You can enable side tabs by changing `tabStyle` below
+    // from "horizontal" to "vertical".
+    tabStyle: "horizontal",
   }), document.body);
 });
