@@ -1,38 +1,39 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {Component} = require("js/component")
-  const {html} = require("js/virtual-dom")
-  const {FrameDeck} = require("js/frame-deck")
-  const {TabNavigator} = require("js/tab-navigator")
-  const {NavigationPanel} = require("js/navigation-panel")
-  const {Keyboard} = require("js/keyboard")
-  const {Theme} = require("js/theme")
+  const {Component} = require("js/component");
+  const {html} = require("js/virtual-dom");
+  const {FrameDeck} = require("js/frame-deck");
+  const {TabNavigator} = require("js/tab-navigator");
+  const {NavigationPanel} = require("js/navigation-panel");
+  const {Keyboard} = require("js/keyboard");
+  const {Theme} = require("js/theme");
 
   const focusInput = input =>
-    Object.assign({}, input, {focused: true})
+    Object.assign({}, input, {focused: true});
+
   const blurInput = input =>
-    Object.assign({}, input, {focused: false})
+    Object.assign({}, input, {focused: false});
+
 
   const SelectFrame = frame =>
     Object.assign({}, frame, {selected: true,
-                              focused: true})
-
+                              focused: true});
   const DeselectFrame = frame =>
     Object.assign({}, frame, {selected: false,
-                              focused: false})
+                              focused: false});
 
   const selectedFrame = frames =>
-    frames.find(({selected}) => selected)
+    frames.find(({selected}) => selected);
 
   const selectFrame = (frames, id) =>
     frames.map(frame =>
                frame.selected && frame.id != id ? DeselectFrame(frame) :
                !frame.selected && frame.id == id ? SelectFrame(frame) :
-               frame)
+               frame);
 
   const makeFrame = (id, state) =>
-    Object.assign({}, state, {id})
+    Object.assign({}, state, {id});
 
   const Browser = Component({
     displayName: "Browser",
@@ -44,94 +45,94 @@ define((require, exports, module) => {
         frames: [{id: 0, selected: true}],
         input: {focused: true},
         search: {focused: false, query: ""},
-      }, Keyboard.keyboardDefaults())
+      }, Keyboard.keyboardDefaults());
     },
     selectFrame({id}) {
-      const frames = selectFrame(this.props.frames, id)
-      const selected = selectFrame(frames)
+      const frames = selectFrame(this.props.frames, id);
+      const selected = selectFrame(frames);
       // If frame does not has a URL it won't be created neither loaded
       // in that case focus an input.
       if (selected.url) {
-        this.patch({frames: frames})
+        this.patch({frames: frames});
       } else {
-        this.patch({frames: frames, input: {focused: true}})
+        this.patch({frames: frames, input: {focused: true}});
       }
     },
     addFrame(options) {
-      const {props} = this
-      const frameID = props.frameID + 1
-      const frames = [...props.frames]
-      const selected = frames.find(({selected}) => selected)
-      const frame = makeFrame(frameID, options)
+      const {props} = this;
+      const frameID = props.frameID + 1;
+      const frames = [...props.frames];
+      const selected = frames.find(({selected}) => selected);
+      const frame = makeFrame(frameID, options);
       frames.splice(frames.indexOf(selected), 1,
                     frame.selected ? DeselectFrame(selected) : selected,
-                    frame)
+                    frame);
 
       this.patch({frameID, frames,
-                  input: focusInput(props.input)})
+                  input: focusInput(props.input)});
     },
     removeFrame({id}) {
-      const {props} = this
-      const frames = [...props.frames]
+      const {props} = this;
+      const frames = [...props.frames];
       // Abort if only one frame left.
       if (frames.length > 1) {
-        const index = frames.findIndex(frame => frame.id == id)
-        frames.splice(index, 1)
-        const selected = frames[index] || frames[frames.length - 1]
-        this.patch({frames: selectFrame(frames, selected.id)})
+        const index = frames.findIndex(frame => frame.id == id);
+        frames.splice(index, 1);
+        const selected = frames[index] || frames[frames.length - 1];
+        this.patch({frames: selectFrame(frames, selected.id)});
       }
     },
     resetFrame(state) {
-      const {frames} = this.props
+      const {frames} = this.props;
       const swapFrame = frame =>
-        frame.id === state.id ? state : frame
+        frame.id === state.id ? state : frame;
 
-      this.patch({frames: frames.map(swapFrame)})
+      this.patch({frames: frames.map(swapFrame)});
     },
 
     resetInput(state) {
-      this.patch({input: state})
+      this.patch({input: state});
     },
     resetSearch(state) {
-      this.patch({search: state})
+      this.patch({search: state});
     },
 
     serializeSession() {
-      const session = Object.assign({}, this.props)
-      const defaults = this.defaults()
+      const session = Object.assign({}, this.props);
+      const defaults = this.defaults();
 
-      delete session.theme
-      delete session.OS
-      delete session.theme
-      delete session.tabStyle
+      delete session.theme;
+      delete session.OS;
+      delete session.theme;
+      delete session.tabStyle;
 
-      return JSON.stringify(session)
+      return JSON.stringify(session);
     },
     clearSession() {
-      localStorage.removeItem("session")
-      this.restoreSession()
+      localStorage.removeItem("session");
+      this.restoreSession();
     },
     saveSession() {
-      localStorage.setItem("session", this.serializeSession())
+      localStorage.setItem("session", this.serializeSession());
     },
     restoreSession() {
-      const data = localStorage.getItem("session")
-      const session = data && JSON.parse(data)
+      const data = localStorage.getItem("session");
+      const session = data && JSON.parse(data);
       if (session && session.version === this.props.version) {
-        this.patch(session)
+        this.patch(session);
       }
       else if (session) {
-        const backup = `session@${session.version}`
-        localStorage.setItem(backup, data)
+        const backup = `session@${session.version}`;
+        localStorage.setItem(backup, data);
         console.error(`Stored session ${session.version} version is incompatible with current ${this.props.version} version.
-Backing up stored session to ${backup} & resuming with blank session instead.`)
+Backing up stored session to ${backup} & resuming with blank session instead.`);
       }
     },
 
     mounted(target, options) {
-      target.ownerDocument.defaultView.addEventListener("beforeunload", this.onUnload)
+      target.ownerDocument.defaultView.addEventListener("beforeunload", this.onUnload);
       target.ownerDocument.body.setAttribute("os", options.OS);
-      this.restoreSession()
+      this.restoreSession();
     },
     onUnload(event) {
       this.saveSession();
@@ -195,9 +196,9 @@ Backing up stored session to ${backup} & resuming with blank session instead.`)
           html.div({key: "tab-curve",
                     hidden: "true",
                     className: "dummy-tab-curve"})
-        ])
+        ]);
     }
-  })
+  });
 
-  exports.Browser = Browser
-})
+  exports.Browser = Browser;
+});

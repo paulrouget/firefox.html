@@ -1,21 +1,20 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {KeyBindings} = require("js/keyboard")
-  const {Component} = require("js/component")
-  const {html} = require("js/virtual-dom")
-  const urlHelper = require("js/urlhelper")
+  const {KeyBindings} = require("js/keyboard");
+  const {Component} = require("js/component");
+  const {html} = require("js/virtual-dom");
+  const urlHelper = require("js/urlhelper");
 
   const makeSearchURL = input =>
-    `https://search.yahoo.com/search?p=${encodeURIComponent(input)}`
-  exports.makeSearchURL = makeSearchURL
+    `https://search.yahoo.com/search?p=${encodeURIComponent(input)}`;
+  exports.makeSearchURL = makeSearchURL;
 
   const readInputURL = input =>
     urlHelper.isNotURL(input) ? makeSearchURL(input) :
     !urlHelper.hasScheme(input) ? `http://${input}` :
-    input
-
-  exports.readInputURL = readInputURL
+    input;
+  exports.readInputURL = readInputURL;
 
   const NavigationPanel = Component({
     displayName: "NavigationPanel",
@@ -25,51 +24,51 @@ define((require, exports, module) => {
     equal(before, after) {
       return before.input == after.input &&
              before.search == after.search &&
-             before.frame == after.frame
+             before.frame == after.frame;
     },
 
     patch({input, frame, search}) {
       if (input) {
-        this.props.resetInput(Object.assign({}, this.props.input, input))
+        this.props.resetInput(Object.assign({}, this.props.input, input));
       }
 
       if (search) {
         this.props.resetSearch(Object.assign({},
                                              this.props.search,
-                                             search))
+                                             search));
       }
 
       if (frame) {
         this.props.resetFrame(Object.assign({},
                                             this.props.frame,
-                                            frame))
+                                            frame));
       }
     },
 
     navigateBack() {
-      this.patch({frame: {action: "goBack"}})
+      this.patch({frame: {action: "goBack"}});
     },
     navigateForward() {
-      this.patch({frame: {action: "goForward"}})
+      this.patch({frame: {action: "goForward"}});
     },
     reload() {
-      this.patch({frame: {action: "reload"}})
+      this.patch({frame: {action: "reload"}});
     },
     stop() {
-      this.patch({frame: {action: "stop"}})
+      this.patch({frame: {action: "stop"}});
     },
 
     updateInput(input) {
-      this.patch({frame: {input}})
+      this.patch({frame: {input}});
     },
     updateURL(url) {
-      this.patch({frame: {url}})
+      this.patch({frame: {url}});
     },
     navigateTo(input) {
       if (input) {
         this.patch({frame: {input: null,
                             focused: true,
-                            url: readInputURL(input)}})
+                            url: readInputURL(input)}});
       }
     },
     focusInput() {
@@ -83,12 +82,12 @@ define((require, exports, module) => {
 
 
     onInputChange(event) {
-      this.patch({frame: {input: event.target.value}})
+      this.patch({frame: {input: event.target.value}});
     },
 
     onInputKey(event) {
       if (event.keyCode === 13) {
-        this.navigateTo(this.props.frame.input)
+        this.navigateTo(this.props.frame.input);
       }
     },
     onInputFocus() {
@@ -100,11 +99,11 @@ define((require, exports, module) => {
 
     onSearchKey(event) {
       if (event.keyCode === 13) {
-        this.navigateTo(this.props.search.query)
+        this.navigateTo(this.props.search.query);
       }
     },
     onSearchChange(event) {
-      this.patch({search: {query: event.target.value}})
+      this.patch({search: {query: event.target.value}});
     },
     onSearchFocus() {
       this.patch({search: {focused: true}});
@@ -118,15 +117,15 @@ define((require, exports, module) => {
     // and selection management is handled manually post update.
     write(target, after, before) {
       if (after.input.focused && !before.input.focused) {
-        const node = target.querySelector(".urlinput")
-        node.focus()
-        node.select()
+        const node = target.querySelector(".urlinput");
+        node.focus();
+        node.select();
       }
 
       if (after.search.focused && !before.search.focused) {
-        const node = target.querySelector(".searchinput")
-        node.focus()
-        node.select()
+        const node = target.querySelector(".searchinput");
+        node.focus();
+        node.select();
       }
     },
     render({frame, input, search}) {
@@ -135,7 +134,7 @@ define((require, exports, module) => {
         frame && frame.loading ? "loading" : "loaded",
         frame && frame.securityState == "secure" ? "ssl" : "",
         frame && frame.securityExtendedValidation ? "sslev" : ""
-      ]
+      ];
 
       return html.div({
         className: classList.join(" ")
@@ -204,8 +203,8 @@ define((require, exports, module) => {
         ]),
         html.button({key: "menu-button",
                      className: "menu-button"})
-      ])
+      ]);
     }
-  })
-  exports.NavigationPanel = NavigationPanel
-})
+  });
+  exports.NavigationPanel = NavigationPanel;
+});

@@ -1,10 +1,11 @@
 define((require, exports, module) => {
   "use strict";
 
-  const React = require("react")
+  const React = require("react");
+
   const makeRender = ({render}) => function() {
-    return render.call(this, this.props)
-  }
+    return render.call(this, this.props);
+  };
 
   const Component = function(options) {
     const descriptor = Object.assign({},
@@ -12,24 +13,25 @@ define((require, exports, module) => {
                                      options,
                                      {getDefaultProps: options.defaults,
                                       render: options.render &&
-                                              makeRender(options)})
-    const Type = React.createClass(descriptor)
-    return React.createFactory(Type)
-  }
+                                              makeRender(options)});
+    const Type = React.createClass(descriptor);
+    return React.createFactory(Type);
+  };
+
   Component.patch = (component, delta) =>
-    component.setProps(delta)
+    component.setProps(delta);
   Component.reset = (component, state) =>
-    component.replaceProps(state)
+    component.replaceProps(state);
 
   Component.prototype = {
     getOptions() {
-      return this.props
+      return this.props;
     },
     get options() {
-      return this.props
+      return this.props;
     },
     defaults() {
-      return {}
+      return {};
     },
     mount(options) {
 
@@ -39,7 +41,7 @@ define((require, exports, module) => {
     unmount(target, options) {
     },
     equal(before, after) {
-      return before === after
+      return before === after;
     },
     write(target, after, before) {
 
@@ -47,33 +49,33 @@ define((require, exports, module) => {
 
     // Updates
     patch(delta) {
-      this.setProps(delta)
+      this.setProps(delta);
     },
     reset(options) {
-      this.replaceProps(options)
+      this.replaceProps(options);
     },
 
     // API Bridge
     getDefaultProps() {
-      return this.defaults()
+      return this.defaults();
     },
     componentWillMount() {
-      this.mount(this.props)
+      this.mount(this.props);
     },
     componentDidMount() {
-      this.mounted(this.getDOMNode(), this.props)
+      this.mounted(this.getDOMNode(), this.props);
     },
     componentWillUnmount() {
-      this.unmount(this.getDOMNode(), this.props)
+      this.unmount(this.getDOMNode(), this.props);
     },
     shouldComponentUpdate(after) {
-      return !this.equal(this.props, after)
+      return !this.equal(this.props, after);
     },
     componentDidUpdate(before) {
-      this.write(this.getDOMNode(), this.props, before)
+      this.write(this.getDOMNode(), this.props, before);
     }
   }
-  exports.Component = Component
+  exports.Component = Component;
 
-  exports.render = React.render
-})
+  exports.render = React.render;
+});

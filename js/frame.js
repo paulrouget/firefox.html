@@ -1,9 +1,9 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {Component} = require("js/component")
-  const {html} = require("js/virtual-dom")
-  const {Element, Option, Attribute, Field, Event } = require("js/element")
+  const {Component} = require("js/component");
+  const {html} = require("js/virtual-dom");
+  const {Element, Option, Attribute, Field, Event } = require("js/element");
 
   const IFrame = Element("iframe", {
     remote: Option("remote"),
@@ -16,27 +16,27 @@ define((require, exports, module) => {
         // seems to trigger a bug in mozbrowser causing it
         // to load previous location instead of current one.
         // To workaround that we delay `src` update.
-        setTimeout(() => node.src = current)
+        setTimeout(() => node.src = current);
       }
     }),
     hidden: Field((node, current, past) => {
       if (current) {
-        node.setAttribute("hidden", true)
-        node.setVisible(false)
+        node.setAttribute("hidden", true);
+        node.setVisible(false);
       } else if (past) {
-        node.removeAttribute("hidden")
-        node.setVisible(true)
+        node.removeAttribute("hidden");
+        node.setVisible(true);
       }
     }),
     zoom: Field((node, current, past) => {
 
       if (current != past) {
-        node.zoom(current)
+        node.zoom(current);
       }
     }),
     focused: Field((node, current, past) => {
       if (current) {
-        node.focus()
+        node.focus();
       }
     }),
     onAsyncScroll: Event("mozbrowserasyncscroll"),
@@ -52,7 +52,7 @@ define((require, exports, module) => {
     onTitleChange: Event("mozbrowsertitlechange"),
     onPrompt: Event("mozbrowsershowmodalprompt"),
     onAuthentificate: Event("mozbrowserusernameandpasswordrequired")
-  })
+  });
 
   const Frame = Component({
     displayName: "Frame",
@@ -69,11 +69,11 @@ define((require, exports, module) => {
         securityExtendedValidation: false,
         canGoBack: false,
         canGoForward: false
-      }
+      };
     },
 
     patch(diff) {
-      this.props.reset(Object.assign({}, this.props, diff))
+      this.props.reset(Object.assign({}, this.props, diff));
     },
 
     // Events
@@ -83,18 +83,18 @@ define((require, exports, module) => {
     },
     onOpen({detail}) {
       if (this.props.open) {
-        this.props.open({url: detail})
+        this.props.open({url: detail});
       }
     },
     onClose() {
       if (this.props.close) {
-        this.props.close(this.props)
+        this.props.close(this.props);
       }
     },
     onContextMenu() {
     },
     onError(event) {
-      console.error(event)
+      console.error(event);
       this.patch({loading: false});
     },
     onSecurityChange() {
@@ -108,63 +108,64 @@ define((require, exports, module) => {
                   securityState: "unsecure",
                   securityExtendedValidation: false,
                   canGoBack: false,
-                  canGoForward: false})
+                  canGoForward: false});
     },
     onLoadEnd(event) {
-      this.patch({loading: false})
+      this.patch({loading: false});
     },
     onTitleChange({detail}) {
-      this.patch({title: detail})
+      this.patch({title: detail});
     },
     onLocationChange({detail}) {
-      this.patch({url: detail, input: null})
+      this.patch({url: detail, input: null});
     },
     onIconChange({detail}) {
-      this.patch({favicon: detail.href})
+      this.patch({favicon: detail.href});
     },
 
     onCanGoBack({target: {result}}) {
-      this.patch({canGoBack: result})
+      this.patch({canGoBack: result});
     },
     onCanGoForward({target: {result}}) {
-      this.patch({canGoForward: result})
+      this.patch({canGoForward: result});
     },
 
     onFocus() {
-      this.patch({focused: true})
+      this.patch({focused: true});
     },
     onBlur() {
-      this.patch({focused: false})
+      this.patch({focused: false});
     },
     onAction({target, action}) {
       if (!target) return;
       if (action === "reload") {
-        target.reload()
+        target.reload();
       }
       if (action === "goBack") {
-        target.goBack()
+        target.goBack();
       }
       if (action === "goForward") {
-        target.goForward()
+        target.goForward();
       }
       if (action === "stop") {
-        target.stop()
+        target.stop();
       }
 
-      this.patch({action: null})
+      this.patch({action: null});
     },
 
     write(target, {loading, action}, past) {
       if (loading != past.loading) {
-        target.getCanGoBack().onsuccess = this.onCanGoBack
-        target.getCanGoForward().onsuccess = this.onCanGoForward
+        target.getCanGoBack().onsuccess = this.onCanGoBack;
+        target.getCanGoForward().onsuccess = this.onCanGoForward;
       }
 
       if (action && action != past.action) {
-        this.onAction({target, action})
+        this.onAction({target, action});
       }
     },
     render({id, url, selected, zoom, focused}) {
+      // Do not render frame if there is no url to load.
       if (!url) return null;
       return IFrame({className: "frame box flex-1",
                      key: `frame-${id}`,
@@ -191,37 +192,39 @@ define((require, exports, module) => {
                      onTitleChange: this.onTitleChange,
                      onPrompt: this.onPrompt,
                      onAuthentificate: this.onAuthentificate
-                    })
+                    });
     }
-  })
+  });
 
   // Frame transformations.
 
   Frame.reload = frame =>
-    Object.assign({}, frame, {action: "reload"})
+    Object.assign({}, frame, {action: "reload"});
 
   Frame.stop = frame =>
-    Object.assign({}, frame, {action: "stop"})
+    Object.assign({}, frame, {action: "stop"});
 
   Frame.goBack = frame =>
-    Object.assign({}, frame, {action: "goBack"})
+    Object.assign({}, frame, {action: "goBack"});
 
   Frame.goForward = frame =>
-    Object.assign({}, frame, {action: "goForward"})
+    Object.assign({}, frame, {action: "goForward"});
 
 
-  Frame.MIN_ZOOM = 0.5
-  Frame.MAX_ZOOM = 2
+  Frame.MIN_ZOOM = 0.5;
+  Frame.MAX_ZOOM = 2;
 
   Frame.zoomIn = frame =>
-    Object.assign({}, frame, {zoom: Math.min(Frame.MAX_ZOOM, frame.zoom + 0.1)})
+    Object.assign({}, frame, {zoom: Math.min(Frame.MAX_ZOOM,
+                                             frame.zoom + 0.1)});
 
   Frame.zoomOut = frame =>
-    Object.assign({}, frame, {zoom: Math.max(Frame.MIN_ZOOM, frame.zoom - 0.1)})
+    Object.assign({}, frame, {zoom: Math.max(Frame.MIN_ZOOM,
+                                             frame.zoom - 0.1)});
 
   Frame.resetZoom = frame =>
-    Object.assign({}, frame, {zoom:1})
+    Object.assign({}, frame, {zoom:1});
 
 
   exports.Frame = Frame;
-})
+});

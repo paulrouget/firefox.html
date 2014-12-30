@@ -1,36 +1,36 @@
 define((require, exports, module) => {
   "use strict";
 
-  const {Component} = require("js/component")
-  const {html}  = require("js/virtual-dom")
-  const {Link} = require("js/virtual-dom/link")
+  const {Component} = require("js/component");
+  const {html}  = require("js/virtual-dom");
+  const {Link} = require("js/virtual-dom/link");
 
   const Tab = Component({
     displayName: "Tab",
     closeTab() {
-      this.props.closeTab(this.props.frame)
+      this.props.closeTab(this.props.frame);
     },
 
     onMouseUp(event) {
-      event.preventDefault()
+      event.preventDefault();
       if (event.button == 1) {
-        this.oncloseTab()
+        this.oncloseTab();
       }
     },
     onCloseTab(event) {
-      event.preventDefault()
-      this.closeTab()
+      event.preventDefault();
+      this.closeTab();
     },
     onSelectTab(event) {
-      event.preventDefault()
-      this.props.selectTab(this.props.frame)
+      event.preventDefault();
+      this.props.selectTab(this.props.frame);
     },
 
     render({frame, tabStyle}) {
-      const { id, selected, title, favicon, loading, url } = frame
+      const { id, selected, title, favicon, loading, url } = frame;
       const classList = ["tab", "hbox", "align", "center",
                          loading ? "loading" : "loaded",
-                         selected ? "selected" : ""]
+                         selected ? "selected" : ""];
 
       return html.div({
         className: classList.join(" "),
@@ -49,10 +49,10 @@ define((require, exports, module) => {
         html.button({key: "close-button",
                      className: "close-button",
                      onMouseUp: this.onCloseTab})
-      ])
+      ]);
     }
-  })
-  exports.Tab = Tab
+  });
+  exports.Tab = Tab;
 
   function BuildCurvedTabs(document) {
     let window = document.defaultView;
@@ -139,10 +139,10 @@ define((require, exports, module) => {
     },
 
     closeTab(frame) {
-      this.props.closeTab(frame)
+      this.props.closeTab(frame);
     },
     selectTab(frame) {
-      this.props.selectTab(frame)
+      this.props.selectTab(frame);
     },
 
     renderTab(frame) {
@@ -152,7 +152,7 @@ define((require, exports, module) => {
         closeTab: this.closeTab,
         selectTab: this.selectTab,
         tabStyle: this.props.tabStyle
-      })
+      });
     },
     render({frames, tabStyle}) {
       const link = tabStyle == "vertical" ?
@@ -160,16 +160,17 @@ define((require, exports, module) => {
                          href: "css/sidetabs.css"}) :
                    Link({rel: "stylesheet",
                          href: "css/tabstrip.css",
-                         onLoad: this.onStyleReady})
+                         onLoad: this.onStyleReady});
+
       const className = tabStyle == "vertical" ?
                         "vbox pack start verticaltabstrip" :
-                        "tabstrip toolbar hbox"
+                        "tabstrip toolbar hbox";
+
       return html.div({className}, [
         link,
         ...frames.map(this.renderTab)
-      ])
+      ]);
     }
-  })
-
-  exports.TabNavigator = TabNavigator
-})
+  });
+  exports.TabNavigator = TabNavigator;
+});

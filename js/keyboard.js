@@ -2,18 +2,19 @@ define((require, exports, module) => {
   "use strict";
 
   const KeysPressed = function(options) {
-    return KeysPressed.make(options)
-  }
+    return KeysPressed.make(options);
+  };
   KeysPressed.equal = (before, after) =>
-    before === after
+    before === after;
 
   KeysPressed.make = ({metaKey, ctrlKey, altKey, shiftKey, keys}) =>
-    ({metaKey, ctrlKey, altKey, shiftKey, keys})
+    ({metaKey, ctrlKey, altKey, shiftKey, keys});
 
   KeysPressed.empty = () =>
     KeysPressed.make({metaKey: false, ctrlKey: false,
                       altKey: false, shiftKey: false,
-                      keys: []})
+                      keys: []});
+
   KeysPressed.patch = (before, delta) => {
     if (("metaKey" in delta && delta.metaKey != before.metaKey) ||
         ("shiftKey" in delta && delta.shiftKey != before.shiftKey) ||
@@ -27,46 +28,48 @@ define((require, exports, module) => {
         altKey: "altKey" in delta ? delta.altKey : before.altKey,
         ctrlKey: "ctrlKey" in delta ? delta.ctrlKey : before.ctrlKey,
         keys: "keys" in delta ? delta.keys : before.keys
-      })
+      });
     }
 
-    return before
-  }
+    return before;
+  };
+
   KeysPressed.readModifiers = ({metaKey, shiftKey, altKey, ctrlKey}) => {
-    const modifiers = []
+    const modifiers = [];
     if (metaKey) {
-      modifiers.push("Meta")
+      modifiers.push("Meta");
     }
     if (ctrlKey) {
-      modifiers.push("Control")
+      modifiers.push("Control");
     }
     if (altKey) {
-      modifiers.push("Alt")
+      modifiers.push("Alt");
     }
     if (shiftKey) {
-      modifiers.push("Shift")
+      modifiers.push("Shift");
     }
-    return modifiers
-  }
-  exports.KeysPressed = KeysPressed
+    return modifiers;
+  };
+
+  exports.KeysPressed = KeysPressed;
 
 
   // These should be symbols but they are not supported
   // by react yet so we're going to use strings for now.
-  const patch = "Keyboard/patch"
-  const field = "keyboard/field"
-  const bindings = "keyborad/bindings"
+  const patch = "Keyboard/patch";
+  const field = "keyboard/field";
+  const bindings = "keyborad/bindings";
 
-  const isMeta = key => key == "Meta"
-  exports.isMeta = isMeta
+  const isMeta = key => key == "Meta";
+  exports.isMeta = isMeta;
 
-  const unsupported = new Set(["CapsLock"])
-  const isSupported = key => !unsupported.has(key)
-  exports.isSupported = isSupported
+  const unsupported = new Set(["CapsLock"]);
+  const isSupported = key => !unsupported.has(key);
+  exports.isSupported = isSupported;
 
-  const modifiers = new Set(["Shift", "Alt", "Control", "Meta"])
-  const isModifier = key => modifiers.has(key)
-  exports.isModifier = isModifier
+  const modifiers = new Set(["Shift", "Alt", "Control", "Meta"]);
+  const isModifier = key => modifiers.has(key);
+  exports.isModifier = isModifier;
 
   const Keyboard = {
     // Keyborad stores state of pressed keys under the field
@@ -81,63 +84,64 @@ define((require, exports, module) => {
     },
     keyboardDefaults() {
       const keyboardField = this[field];
-      return {[keyboardField]: KeysPressed.empty()}
+      return {[keyboardField]: KeysPressed.empty()};
     },
     overlay(element) {
-      element.onBlur = this.onBlur
-      element.onKeyDown = this.onKeyDown
-      element.onKeyUp = this.onKeyUp
+      element.onBlur = this.onBlur;
+      element.onKeyDown = this.onKeyDown;
+      element.onKeyUp = this.onKeyUp;
     },
     onKeyDown({key, metaKey, shiftKey, altKey, ctrlKey}) {
-      const {keys} = this.props[this[field]]
+      const keyboardField = this[field];
+      const {keys} = this.props[keyboardField];
       if (isSupported(key)) {
         if (metaKey) {
           this[patch]({
             metaKey, shiftKey, altKey, ctrlKey,
             keys: isModifier(key) ? [] : [key]
-          })
+          });
         }
         else if (isModifier(key) || keys.includes(key)) {
-          this[patch]({metaKey, shiftKey, altKey, ctrlKey})
+          this[patch]({metaKey, shiftKey, altKey, ctrlKey});
         } else {
           this[patch]({
             metaKey, shiftKey, altKey, ctrlKey,
             keys: [...keys, key]
-          })
+          });
         }
       }
     },
     onKeyUp({key, metaKey, shiftKey, altKey, ctrlKey}) {
-      const {keys} = this.props[this[field]]
+      const keyboardField = this[field];
+      const {keys} = this.props[keyboardField];
       if (isMeta(key)) {
         this[patch]({
           metaKey, shiftKey, altKey, ctrlKey,
           keys: []
-        })
+        });
       }
       else if (isModifier(key) || !keys.includes(key)) {
-        this[patch]({metaKey, shiftKey, altKey, ctrlKey})
+        this[patch]({metaKey, shiftKey, altKey, ctrlKey});
       } else {
         this[patch]({
           metaKey, shiftKey, altKey, ctrlKey,
           keys: keys.filter($ => $ != key)
-        })
+        });
       }
     },
     onBlur() {
-      this[patch](KeysPressed.empty())
+      this[patch](KeysPressed.empty());
     }
   };
-  exports.Keyboard = Keyboard
+  exports.Keyboard = Keyboard;
 
 
-
-  const readKey = key => readKey.table[key] || key
+  const readKey = key => readKey.table[key] || key;
   readKey.table = Object.assign(Object.create(null), {
     "ctrl": "control",
     "@meta": window.OS == "osx" ? "meta" : "control"
-  })
-  exports.readKey = readKey
+  });
+  exports.readKey = readKey;
 
   const readChord = input =>
     input.trim().
@@ -145,8 +149,8 @@ define((require, exports, module) => {
           split(/\s+/).
           map(readKey).
           sort().
-          join(" ")
-  exports.readChord = readChord
+          join(" ");
+  exports.readChord = readChord;
 
   const writeChord = keysPressed =>
     [...KeysPressed.readModifiers(keysPressed), ...keysPressed.keys].
@@ -154,37 +158,36 @@ define((require, exports, module) => {
       toLowerCase().
       split(" ").
       sort().
-      join(" ")
-
+      join(" ");
 
 
   const KeyBindings = {
     make: (fieldName, keyMap) => {
-      const table = Object.create(null)
+      const table = Object.create(null);
       Object.keys(keyMap).forEach(cord => {
-        table[readChord(cord)] = keyMap[cord]
-      })
+        table[readChord(cord)] = keyMap[cord];
+      });
 
       return Object.assign({},
                            KeyBindings,
                            {[field]: fieldName,
-                            [bindings]: table})
+                            [bindings]: table});
     },
     componentWillReceiveProps(props) {
       const keyboardField = this[field];
-      const after = props[keyboardField]
-      const before = this.props[keyboardField]
+      const after = props[keyboardField];
+      const before = this.props[keyboardField];
       if (!KeysPressed.equal(before, after)) {
-        this.onKeyBinding(after)
+        this.onKeyBinding(after);
       }
     },
     onKeyBinding(keysPressed) {
-      const chord = writeChord(keysPressed)
-      const handler = this[bindings][chord]
+      const chord = writeChord(keysPressed);
+      const handler = this[bindings][chord];
       if (handler) {
-        this[handler]()
+        this[handler]();
       }
     }
-  }
-  exports.KeyBindings = KeyBindings
-})
+  };
+  exports.KeyBindings = KeyBindings;
+});
