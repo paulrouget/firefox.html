@@ -170,6 +170,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     if (tabIframe == TabIframeDeck.getSelected()) {
       tab.select();
     }
+      if (tabstrip.children.length > document.body.offsetWidth / 60) {
+          tabstrip.className = tabstrip.className + " smalltabs";
+      } else {
+          tabstrip.className = "tabstrip toolbar";
+      }  
   });
 
   TabIframeDeck.on('remove', (event, detail) => {
@@ -178,6 +183,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
       tab.destroy();
       allTabs.delete(detail.tabIframe);
     }
+      if (tabstrip.children.length > document.body.offsetWidth / 60) {
+          tabstrip.className = tabstrip.className + " smalltabs";
+      } else {
+          tabstrip.className = "tabstrip toolbar";
+      }  
   });
 
   TabIframeDeck.on('select', (event, detail) => {

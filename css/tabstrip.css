@@ -6,6 +6,7 @@
   padding: 0 28px 0 10px;
   margin-bottom: calc(-1 * var(--hwd-pixel));
   z-index: 999;
+    overflow:hidden;
 }
 
 [os="osx"] .tabstrip:first-of-type {
@@ -25,8 +26,11 @@
   padding-top: 1px;
   flex-basis: 180px;
   background-clip: border-box;
+  min-width: 0px;
 }
-
+.smalltabs {
+  background:red;
+}
 [os="linux"] .dummy-tab-curve {
   /* These values are used in curvedTabs.js */
   --curve-border: transparent;
