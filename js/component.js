@@ -1,5 +1,5 @@
 define((require, exports, module) => {
-  "use stict";
+  "use strict";
 
   const React = require("react")
   const makeRender = ({render}) => function() {
