@@ -10,14 +10,20 @@ define((require, exports, module) => {
     closeTab() {
       this.props.closeTab(this.props.frame)
     },
-    selectTab() {
-      this.props.selectTab(this.props.frame)
-    },
 
-    onMouseUp({button}) {
-      if (button == 1) {
-        this.closeTab()
+    onMouseUp(event) {
+      event.preventDefault()
+      if (event.button == 1) {
+        this.oncloseTab()
       }
+    },
+    onCloseTab(event) {
+      event.preventDefault()
+      this.closeTab()
+    },
+    onSelectTab(event) {
+      event.preventDefault()
+      this.props.selectTab(this.props.frame)
     },
 
     render({frame, tabStyle}) {
@@ -28,7 +34,7 @@ define((require, exports, module) => {
 
       return html.div({
         className: classList.join(" "),
-        onMouseDown: this.selectTab,
+        onClick: this.onSelectTab,
         onMouseUp: this.onMouseUp
       }, [
         html.div({key: "throbber",
@@ -42,7 +48,7 @@ define((require, exports, module) => {
         ]),
         html.button({key: "close-button",
                      className: "close-button",
-                     onMouseUp: this.closeTab})
+                     onMouseUp: this.onCloseTab})
       ])
     }
   })
