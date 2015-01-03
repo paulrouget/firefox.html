@@ -69,7 +69,7 @@ define(['js/tabiframe', 'js/eventemitter', 'js/keybindings'],
         tabIframe.setLocation(options.url);
       }
 
-      if (options.select != false || _selectIndex < 0) {
+      if (options.select || _selectIndex < 0) {
         this.select(tabIframe);
       } else {
         tabIframe.hide();
