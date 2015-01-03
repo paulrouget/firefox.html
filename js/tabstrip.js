@@ -27,7 +27,9 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // <hbox class='tabstrip'></hbox>
   // Tabs will be appended in there.
   let tabstrip = document.createElement('hbox');
-  tabstrip.className = 'tabstrip toolbar';
+  let tabstripclassname = 'tabstrip toolbar';
+  let smalltabstripclassname = 'tabstrip toolbar smalltabs';
+  tabstrip.className = tabstripclassname;
   let outervbox = document.querySelector('#outervbox');
   outervbox.insertBefore(tabstrip, outervbox.firstChild);
 
@@ -170,6 +172,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     if (tabIframe == TabIframeDeck.getSelected()) {
       tab.select();
     }
+      if (tabstrip.children.length > document.body.offsetWidth / 60) {
+          tabstrip.className = smalltabstripclassname;
+      } else {
+          tabstrip.className = tabstripclassname;
+      }
   });
 
   TabIframeDeck.on('remove', (event, detail) => {
@@ -178,6 +185,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
       tab.destroy();
       allTabs.delete(detail.tabIframe);
     }
+      if (tabstrip.children.length > document.body.offsetWidth / 60) {
+          tabstrip.className = smalltabstripclassname;
+      } else {
+          tabstrip.className = tabstripclassname;
+      }
   });
 
   TabIframeDeck.on('select', (event, detail) => {
