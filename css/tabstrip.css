@@ -25,7 +25,6 @@
   padding-top: 1px;
   flex-basis: 180px;
   background-clip: border-box;
-  min-width: 0px;
 }
 
 [os="linux"] .dummy-tab-curve {
