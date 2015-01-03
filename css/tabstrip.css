@@ -175,7 +175,3 @@
 .smalltabs > .tab.selected > .close-button {
   width:16px;
 }
-
-.smalltabs > .tab.selected > .title {
-  flex-grow:1;
-}
