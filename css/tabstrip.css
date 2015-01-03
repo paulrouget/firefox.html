@@ -26,7 +26,7 @@
   padding-top: 1px;
   flex-basis: 180px;
   background-clip: border-box;
-  min-width:0px;
+  min-width:0;
 }
 
 [os="linux"] .dummy-tab-curve {
@@ -169,7 +169,7 @@
 }
 
 .smalltabs > .tab > .close-button {
-  width:0px;
+  width:0;
 }
 
 .smalltabs > .tab.selected > .close-button {
