@@ -27,8 +27,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // <hbox class='tabstrip'></hbox>
   // Tabs will be appended in there.
   let tabstrip = document.createElement('hbox');
+  
+  //classnames for the different states of the tabstrip
   let tabstripclassname = 'tabstrip toolbar';
   let smalltabstripclassname = 'tabstrip toolbar smalltabs';
+  
   tabstrip.className = tabstripclassname;
   let outervbox = document.querySelector('#outervbox');
   outervbox.insertBefore(tabstrip, outervbox.firstChild);
@@ -64,16 +67,13 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
       }
     };
 
-    hbox.onmousedown = (event) => {
-      if (event.button == 0) {
-        TabIframeDeck.select(tabIframe);
-      }
-    };
-
     hbox.onmouseup = (event) => {
       if (event.button == 1) {
         event.stopPropagation();
         TabIframeDeck.remove(tabIframe);
+      }
+      if (event.button == 0) {
+        TabIframeDeck.select(tabIframe);
       }
     }
 

@@ -73,7 +73,7 @@
   z-index: 1001;
   border-image-source: -moz-element(#canvas-tab-selected);
   color: black;
-  min-width: 30px;
+  min-width: 50px;
 }
 
 .tab:not(.selected):not(:hover) + .tab:not(.selected):not(:hover):not(:first-of-type) {
@@ -137,7 +137,7 @@
   height: 16px;
   background-color: transparent;
   background-image: url(images/shared/close.png);
-  background-size: 64px 16px;;
+  background-size: 64px 16px;
   margin: 0 -6px 0 3px;
 }
 
@@ -174,10 +174,6 @@
 
 .smalltabs > .tab.selected > .close-button {
   width:16px;
-}
-
-.smalltabs > .tab > .title {
-  flex-grow:0;
 }
 
 .smalltabs > .tab.selected > .title {
