@@ -27,7 +27,12 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
   // <hbox class='tabstrip'></hbox>
   // Tabs will be appended in there.
   let tabstrip = document.createElement('hbox');
-  tabstrip.className = 'tabstrip toolbar';
+
+  //classnames for the different states of the tabstrip
+  let tabstripclassname = 'tabstrip toolbar';
+  let smalltabstripclassname = 'tabstrip toolbar smalltabs';
+
+  tabstrip.className = tabstripclassname;
   let outervbox = document.querySelector('#outervbox');
   outervbox.insertBefore(tabstrip, outervbox.firstChild);
 
@@ -55,7 +60,7 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     button.className = 'close-button';
     button.title = 'Close Tab';
 
-    button.onmouseup = (event) => {
+    button.onclick = (event) => {
       if (event.button == 0) {
         event.stopPropagation();
         TabIframeDeck.remove(tabIframe);
@@ -170,6 +175,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     if (tabIframe == TabIframeDeck.getSelected()) {
       tab.select();
     }
+    if (tabstrip.children.length > document.body.offsetWidth / 60) {
+      tabstrip.className = smalltabstripclassname;
+    } else {
+      tabstrip.className = tabstripclassname;
+    }
   });
 
   TabIframeDeck.on('remove', (event, detail) => {
@@ -177,6 +187,11 @@ require(['js/tabiframedeck'], function(TabIframeDeck) {
     if (tab) {
       tab.destroy();
       allTabs.delete(detail.tabIframe);
+    }
+    if (tabstrip.children.length > document.body.offsetWidth / 60) {
+      tabstrip.className = smalltabstripclassname;
+    } else {
+      tabstrip.className = tabstripclassname;
     }
   });
 

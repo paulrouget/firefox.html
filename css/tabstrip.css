@@ -6,6 +6,7 @@
   padding: 0 28px 0 10px;
   margin-bottom: calc(-1 * var(--hwd-pixel));
   z-index: 999;
+  overflow:hidden;
 }
 
 [os="osx"] .tabstrip:first-of-type {
@@ -25,6 +26,7 @@
   padding-top: 1px;
   flex-basis: 180px;
   background-clip: border-box;
+  min-width:0;
 }
 
 [os="linux"] .dummy-tab-curve {
@@ -71,6 +73,7 @@
   z-index: 1001;
   border-image-source: -moz-element(#canvas-tab-selected);
   color: black;
+  min-width: 50px;
 }
 
 .tab:not(.selected):not(:hover) + .tab:not(.selected):not(:hover):not(:first-of-type) {
@@ -87,8 +90,9 @@
 .tab > .favicon, .tab > .throbber {
   width: 16px;
   height: 16px;
+  min-width: 16px;
   margin: 0 3px 0 -6px;
-  image-rendering: optimizequality;
+  image-rendering: auto;
 }
 
 .tab > .favicon:not([src]) {
@@ -133,7 +137,7 @@
   height: 16px;
   background-color: transparent;
   background-image: url(images/shared/close.png);
-  background-size: 64px 16px;;
+  background-size: 64px 16px;
   margin: 0 -6px 0 3px;
 }
 
@@ -162,4 +166,12 @@
 
 .tab > .close-button:hover:active {
   background-position: -32px 0;
+}
+
+.smalltabs > .tab > .close-button {
+  width:0;
+}
+
+.smalltabs > .tab.selected > .close-button {
+  width:16px;
 }
