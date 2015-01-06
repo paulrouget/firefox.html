@@ -1,3 +1,7 @@
+/* this source code form is subject to the terms of the mozilla public
+ * license, v. 2.0. if a copy of the mpl was not distributed with this
+ * file, you can obtain one at http://mozilla.org/mpl/2.0/. */
+
 define((require, exports, module) => {
   "use strict";
 
@@ -42,8 +46,11 @@ define((require, exports, module) => {
       return Object.assign({
         isPrivileged: true,
         frameID: 0,
-        frames: [{id: 0, selected: true}],
-        input: {focused: true},
+        frames: [{id: 0,
+                  selected: true,
+                  focused: true,
+                  url: "https://github.com/paulrouget/firefox.html/commits/master"}],
+        input: {focused: false},
         search: {focused: false, query: ""},
       }, Keyboard.keyboardDefaults());
     },

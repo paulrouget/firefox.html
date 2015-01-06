@@ -1,3 +1,7 @@
+/* this source code form is subject to the terms of the mozilla public
+ * license, v. 2.0. if a copy of the mpl was not distributed with this
+ * file, you can obtain one at http://mozilla.org/mpl/2.0/. */
+
 define((require, exports, module) => {
   "use strict";
 
@@ -143,23 +147,27 @@ define((require, exports, module) => {
                    "href": "css/navbar.css"}),
         html.button({
           key: "back-button",
+          title: "Go back one page",
           className: ["back-button",
                       frame && frame.canGoBack ? "" : "disabled"].join(" "),
           onClick: this.navigateBack
         }),
         html.button({
           key: "forward-button",
+          title: "Go forward one page",
           className: ["forward-button",
                       frame && frame.canGoForward ? "" : "disabled"].join(" "),
           onClick: this.navigateForward
         }),
         html.button({
           key: "reload-button",
+          title: "Reload current page",
           className: "reload-button",
           onClick: this.reload
         }),
         html.button({
           key: "stop-button",
+          title: "Stop loading this page",
           className: "stop-button",
           onClick: this.stop
         }),

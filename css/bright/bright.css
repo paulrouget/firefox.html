@@ -46,18 +46,18 @@
   /* These values are used in curvedTabs.js */
   --curve-border: #AAA;
   --curve-gradient-start: #FBFBFB;
-  --curve-gradient-end: #EDEDED;
+  --curve-gradient-end: #F1F1F1;
   --curve-hover-border: #AAA;
   --curve-hover-gradient-start: transparent;
   --curve-hover-gradient-end: transparent;
 }
 
 [os="linux"] .tab {
-  color: white;
+  color: -moz-menubartext;
 }
 
 .navbar {
-  background-image: linear-gradient(#EDEDED, #D3D3D3);
+  background-image: linear-gradient(#F1F1F1, #D3D3D3);
 }
 
 [os="osx"] .navbar {
@@ -118,7 +118,6 @@
 }
 
 .navbar.sslev .identity {
-  /* Extended Validation doesn't work yet: bug 764496 */
   background-image: url(../images/shared/identity-icons-https-ev.png);
 }
 
@@ -132,7 +131,6 @@
   }
 
   .navbar.sslev .identity {
-    /* Extended Validation doesn't work yet: bug 764496 */
     background-image: url(../images/shared/identity-icons-https-ev@2x.png);
   }
 }
