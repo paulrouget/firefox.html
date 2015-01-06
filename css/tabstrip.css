@@ -22,7 +22,7 @@
   border-color: transparent;
   margin-right: -25px;
   padding-top: 1px;
-  flex-basis: 120px;
+  flex-basis: 180px;
   background-clip: border-box;
 }
 
@@ -52,6 +52,7 @@
   width: 16px;
   height: 16px;
   margin: 0 3px 0 -6px;
+  image-rendering: optimizequality;
 }
 
 .tab > .favicon:not([src]),
@@ -77,6 +78,7 @@
 
 .tab > .title {
   flex-grow: 1;
+  display: inline-block;
   width: 0;
   text-overflow: ellipsis;
   overflow-x: hidden;
@@ -84,6 +86,7 @@
   opacity: 0.7;
   font: -moz-field;
   font-size: 12px;
+  outline: none;
 }
 
 .tab.selected > .title {

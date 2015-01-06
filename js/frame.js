@@ -1,3 +1,7 @@
+/* this source code form is subject to the terms of the mozilla public
+ * license, v. 2.0. if a copy of the mpl was not distributed with this
+ * file, you can obtain one at http://mozilla.org/mpl/2.0/. */
+
 define((require, exports, module) => {
   "use strict";
 
@@ -65,7 +69,7 @@ define((require, exports, module) => {
         url: null,
         title: null,
         favicon: null,
-        securityState: "unsecure",
+        securityState: "insecure",
         securityExtendedValidation: false,
         canGoBack: false,
         canGoForward: false
@@ -105,7 +109,7 @@ define((require, exports, module) => {
       this.patch({loading: true,
                   favicon: null,
                   title: null,
-                  securityState: "unsecure",
+                  securityState: "insecure",
                   securityExtendedValidation: false,
                   canGoBack: false,
                   canGoForward: false});
