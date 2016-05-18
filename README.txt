@@ -1,1 +1,1 @@
-Project has moved: https://github.com/mozilla/browser.html
+Project has moved: https://github.com/browserhtml/browserhtml
